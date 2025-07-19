@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Optimized launch splash screen for Everyday Helper -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color matching app theme -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#1976D2" />
+        </shape>
+    </item>
+
+    <!-- App logo/icon in center -->
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:drawable="@mipmap/ic_launcher"
+        android:gravity="center" />
+
+    <!-- Optional: Add app name below icon -->
+    <item android:gravity="center|bottom">
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+            <size android:height="100dp" />
+        </shape>
+    </item>
+</layer-list>
