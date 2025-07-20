@@ -35,7 +35,8 @@ class PercentageCalculation {
 }
 
 class PercentageCalculatorViewModel extends ChangeNotifier {
-  PercentageCalculationType _currentType = PercentageCalculationType.percentageOf;
+  PercentageCalculationType _currentType =
+      PercentageCalculationType.whatPercent;
   String _value1Text = '';
   String _value2Text = '';
   String _result = '';
@@ -50,7 +51,8 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
   String get result => _result;
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null && _errorMessage!.isNotEmpty;
-  List<PercentageCalculation> get calculations => List.unmodifiable(_calculations);
+  List<PercentageCalculation> get calculations =>
+      List.unmodifiable(_calculations);
   List<Calculation> get history => _history.calculations;
 
   // Type management
@@ -69,7 +71,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       case PercentageCalculationType.percentageDecrease:
         return 'Percentage Decrease';
       case PercentageCalculationType.whatPercent:
-        return 'What Percent';
+        return 'Find Percentage';
       case PercentageCalculationType.tip:
         return 'Tip Calculator';
       case PercentageCalculationType.discount:
@@ -90,7 +92,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       case PercentageCalculationType.percentageDecrease:
         return 'Calculate value after % decrease';
       case PercentageCalculationType.whatPercent:
-        return 'Find what % one value is of another';
+        return 'หาว่าค่าหนึ่งเป็นกี่เปอร์เซ็นต์ของอีกค่าหนึ่ง (เช่น 30 เป็นกี่% ของ 1,000)';
       case PercentageCalculationType.tip:
         return 'Calculate tip amount and total';
       case PercentageCalculationType.discount:
@@ -110,7 +112,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       case PercentageCalculationType.percentageDecrease:
         return 'Original Value';
       case PercentageCalculationType.whatPercent:
-        return 'Value';
+        return 'ค่าที่ต้องการหา % (เช่น 30)';
       case PercentageCalculationType.tip:
         return 'Bill Amount';
       case PercentageCalculationType.discount:
@@ -130,7 +132,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       case PercentageCalculationType.percentageDecrease:
         return 'Percentage (%)';
       case PercentageCalculationType.whatPercent:
-        return 'Total Value';
+        return 'ค่าทั้งหมด (เช่น 1,000)';
       case PercentageCalculationType.tip:
         return 'Tip Percentage (%)';
       case PercentageCalculationType.discount:
@@ -174,7 +176,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
     try {
       final calculation = _performCalculation(_currentType, value1, value2);
       _result = calculation.formattedResult;
-      
+
       // Add to calculations list for display
       _calculations.insert(0, calculation);
       if (_calculations.length > 20) {
@@ -195,16 +197,15 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
         },
       );
       _history.addCalculation(historyItem);
-
     } catch (e) {
       _setError(e.toString());
     }
   }
 
   PercentageCalculation _performCalculation(
-    PercentageCalculationType type, 
-    double value1, 
-    double value2
+    PercentageCalculationType type,
+    double value1,
+    double value2,
   ) {
     double result;
     String description;
@@ -228,25 +229,28 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       case PercentageCalculationType.whatPercent:
         if (value2 == 0) throw Exception('Cannot divide by zero');
         result = (value1 / value2) * 100;
-        description = '$value1 is ${result.toStringAsFixed(2)}% of $value2';
+        description = '$value1 เป็น ${result.toStringAsFixed(2)}% ของ $value2';
         break;
 
       case PercentageCalculationType.tip:
         final tipAmount = value1 * value2 / 100;
         result = value1 + tipAmount;
-        description = 'Bill: $value1, Tip ($value2%): ${tipAmount.toStringAsFixed(2)}, Total: $result';
+        description =
+            'Bill: $value1, Tip ($value2%): ${tipAmount.toStringAsFixed(2)}, Total: $result';
         break;
 
       case PercentageCalculationType.discount:
         final discountAmount = value1 * value2 / 100;
         result = value1 - discountAmount;
-        description = 'Original: $value1, Discount ($value2%): ${discountAmount.toStringAsFixed(2)}, Final: $result';
+        description =
+            'Original: $value1, Discount ($value2%): ${discountAmount.toStringAsFixed(2)}, Final: $result';
         break;
 
       case PercentageCalculationType.tax:
         final taxAmount = value1 * value2 / 100;
         result = value1 + taxAmount;
-        description = 'Before tax: $value1, Tax ($value2%): ${taxAmount.toStringAsFixed(2)}, Total: $result';
+        description =
+            'Before tax: $value1, Tax ($value2%): ${taxAmount.toStringAsFixed(2)}, Total: $result';
         break;
 
       case PercentageCalculationType.markupMargin:
@@ -255,7 +259,8 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
         final markupPercent = (profit / value1) * 100;
         final marginPercent = (profit / value2) * 100;
         result = markupPercent;
-        description = 'Cost: $value1, Selling: $value2, Markup: ${markupPercent.toStringAsFixed(2)}%, Margin: ${marginPercent.toStringAsFixed(2)}%';
+        description =
+            'Cost: $value1, Selling: $value2, Markup: ${markupPercent.toStringAsFixed(2)}%, Margin: ${marginPercent.toStringAsFixed(2)}%';
         break;
     }
 
@@ -327,10 +332,18 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
             'Margin': '${marginPercent.toStringAsFixed(2)}%',
           };
 
-        default:
+        case PercentageCalculationType.whatPercent:
+          if (value1 == 0 || value2 == 0) return {};
+          final percentage = (value1 / value2) * 100;
           return {
-            'Result': _result,
+            'ค่าที่ต้องการหา': value1.toStringAsFixed(2),
+            'ค่าทั้งหมด': value2.toStringAsFixed(2),
+            'เปอร์เซ็นต์': '${percentage.toStringAsFixed(2)}%',
+            'สูตรคำนวณ': '($value1 ÷ $value2) × 100',
           };
+
+        default:
+          return {'Result': _result};
       }
     } catch (e) {
       return {};
@@ -385,8 +398,9 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
       return '$fieldName cannot be negative';
     }
 
-    if (_currentType == PercentageCalculationType.markupMargin && 
-        fieldName.contains('Cost') && numValue == 0) {
+    if (_currentType == PercentageCalculationType.markupMargin &&
+        fieldName.contains('Cost') &&
+        numValue == 0) {
       return 'Cost price cannot be zero';
     }
 
@@ -399,6 +413,7 @@ class PercentageCalculatorViewModel extends ChangeNotifier {
     PercentageCalculationType.discount,
     PercentageCalculationType.tax,
     PercentageCalculationType.percentageOf,
+    PercentageCalculationType.whatPercent,
   ];
 
   static const List<PercentageCalculationType> allTypes = [
