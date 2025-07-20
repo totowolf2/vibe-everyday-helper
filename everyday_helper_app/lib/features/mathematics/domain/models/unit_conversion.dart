@@ -241,6 +241,48 @@ class UnitRegistry {
       Unit(id: 'kwh', name: 'Kilowatt Hour', symbol: 'kWh', category: UnitCategory.energy, conversionFactor: 3600000.0),
       Unit(id: 'btu', name: 'British Thermal Unit', symbol: 'BTU', category: UnitCategory.energy, conversionFactor: 1055.06),
     ],
+    
+    UnitCategory.power: [
+      Unit(id: 'w', name: 'Watt', symbol: 'W', category: UnitCategory.power, conversionFactor: 1.0),
+      Unit(id: 'kw', name: 'Kilowatt', symbol: 'kW', category: UnitCategory.power, conversionFactor: 1000.0),
+      Unit(id: 'mw', name: 'Megawatt', symbol: 'MW', category: UnitCategory.power, conversionFactor: 1000000.0),
+      Unit(id: 'hp', name: 'Horsepower', symbol: 'hp', category: UnitCategory.power, conversionFactor: 745.7),
+      Unit(id: 'ps', name: 'Metric Horsepower', symbol: 'PS', category: UnitCategory.power, conversionFactor: 735.5),
+      Unit(id: 'btu_h', name: 'BTU per Hour', symbol: 'BTU/h', category: UnitCategory.power, conversionFactor: 0.293071),
+    ],
+    
+    UnitCategory.time: [
+      Unit(id: 'ns', name: 'Nanosecond', symbol: 'ns', category: UnitCategory.time, conversionFactor: 0.000000001),
+      Unit(id: 'μs', name: 'Microsecond', symbol: 'μs', category: UnitCategory.time, conversionFactor: 0.000001),
+      Unit(id: 'ms', name: 'Millisecond', symbol: 'ms', category: UnitCategory.time, conversionFactor: 0.001),
+      Unit(id: 's', name: 'Second', symbol: 's', category: UnitCategory.time, conversionFactor: 1.0),
+      Unit(id: 'min', name: 'Minute', symbol: 'min', category: UnitCategory.time, conversionFactor: 60.0),
+      Unit(id: 'h', name: 'Hour', symbol: 'h', category: UnitCategory.time, conversionFactor: 3600.0),
+      Unit(id: 'd', name: 'Day', symbol: 'd', category: UnitCategory.time, conversionFactor: 86400.0),
+      Unit(id: 'week', name: 'Week', symbol: 'week', category: UnitCategory.time, conversionFactor: 604800.0),
+      Unit(id: 'month', name: 'Month', symbol: 'month', category: UnitCategory.time, conversionFactor: 2629746.0),
+      Unit(id: 'year', name: 'Year', symbol: 'year', category: UnitCategory.time, conversionFactor: 31556952.0),
+    ],
+    
+    UnitCategory.speed: [
+      Unit(id: 'm_s', name: 'Meter per Second', symbol: 'm/s', category: UnitCategory.speed, conversionFactor: 1.0),
+      Unit(id: 'km_h', name: 'Kilometer per Hour', symbol: 'km/h', category: UnitCategory.speed, conversionFactor: 0.277778),
+      Unit(id: 'mph', name: 'Mile per Hour', symbol: 'mph', category: UnitCategory.speed, conversionFactor: 0.44704),
+      Unit(id: 'ft_s', name: 'Foot per Second', symbol: 'ft/s', category: UnitCategory.speed, conversionFactor: 0.3048),
+      Unit(id: 'knot', name: 'Knot', symbol: 'kn', category: UnitCategory.speed, conversionFactor: 0.514444),
+      Unit(id: 'mach', name: 'Mach', symbol: 'Ma', category: UnitCategory.speed, conversionFactor: 343.0),
+    ],
+    
+    UnitCategory.pressure: [
+      Unit(id: 'pa', name: 'Pascal', symbol: 'Pa', category: UnitCategory.pressure, conversionFactor: 1.0),
+      Unit(id: 'kpa', name: 'Kilopascal', symbol: 'kPa', category: UnitCategory.pressure, conversionFactor: 1000.0),
+      Unit(id: 'mpa', name: 'Megapascal', symbol: 'MPa', category: UnitCategory.pressure, conversionFactor: 1000000.0),
+      Unit(id: 'bar', name: 'Bar', symbol: 'bar', category: UnitCategory.pressure, conversionFactor: 100000.0),
+      Unit(id: 'atm', name: 'Atmosphere', symbol: 'atm', category: UnitCategory.pressure, conversionFactor: 101325.0),
+      Unit(id: 'psi', name: 'Pound per Square Inch', symbol: 'psi', category: UnitCategory.pressure, conversionFactor: 6894.76),
+      Unit(id: 'torr', name: 'Torr', symbol: 'Torr', category: UnitCategory.pressure, conversionFactor: 133.322),
+      Unit(id: 'mmhg', name: 'Millimeter of Mercury', symbol: 'mmHg', category: UnitCategory.pressure, conversionFactor: 133.322),
+    ],
   };
 
   static List<Unit> getUnitsForCategory(UnitCategory category) {

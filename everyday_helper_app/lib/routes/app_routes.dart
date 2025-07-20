@@ -8,6 +8,7 @@ import '../features/mathematics/presentation/pages/mathematics_screen.dart';
 import '../features/mathematics/presentation/pages/basic_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/statistics_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/percentage_calculator_screen.dart';
+import '../features/mathematics/presentation/pages/unit_converter_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -69,6 +70,15 @@ class AppRoutes {
           builder: (context) => FeatureLoader.loadFeature(
             'percentage_calculator_screen',
             () => const LazyPercentageCalculatorScreen(),
+          ),
+          settings: settings,
+        );
+
+      case AppConstants.unitConverterRoute:
+        return MaterialPageRoute(
+          builder: (context) => FeatureLoader.loadFeature(
+            'unit_converter_screen',
+            () => const LazyUnitConverterScreen(),
           ),
           settings: settings,
         );
@@ -458,6 +468,38 @@ class LazyPercentageCalculatorScreen extends StatelessWidget {
 
   Widget _createPercentageCalculatorScreen() {
     return const PercentageCalculatorScreen();
+  }
+}
+
+/// Lazy wrapper for UnitConverterScreen
+class LazyUnitConverterScreen extends StatelessWidget {
+  const LazyUnitConverterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadUnitConverterFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Unit Converter', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Unit Converter...');
+      },
+    );
+  }
+
+  Future<Widget> _loadUnitConverterFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createUnitConverterScreen();
+  }
+
+  Widget _createUnitConverterScreen() {
+    return const UnitConverterScreen();
   }
 }
 
