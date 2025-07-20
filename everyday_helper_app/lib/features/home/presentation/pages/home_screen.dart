@@ -100,6 +100,9 @@ class HomeScreen extends StatelessWidget {
       case AppConstants.priceComparisonRoute:
         AppRoutes.navigateToPriceComparison(context);
         break;
+      case AppConstants.mathematicsRoute:
+        Navigator.of(context).pushNamed(AppConstants.mathematicsRoute);
+        break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

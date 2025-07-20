@@ -4,6 +4,9 @@ import '../features/home/presentation/pages/home_screen.dart';
 import '../core/initialization/feature_loader.dart';
 import '../features/price_comparison/presentation/pages/price_comparison_screen.dart';
 import '../features/price_comparison/presentation/pages/help_screen.dart';
+import '../features/mathematics/presentation/pages/mathematics_screen.dart';
+import '../features/mathematics/presentation/pages/basic_calculator_screen.dart';
+import '../features/mathematics/presentation/pages/statistics_calculator_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -29,6 +32,33 @@ class AppRoutes {
           builder: (context) => FeatureLoader.loadFeature(
             'help_screen',
             () => const LazyHelpScreen(),
+          ),
+          settings: settings,
+        );
+
+      case AppConstants.mathematicsRoute:
+        return MaterialPageRoute(
+          builder: (context) => FeatureLoader.loadFeature(
+            'mathematics_screen',
+            () => const LazyMathematicsScreen(),
+          ),
+          settings: settings,
+        );
+
+      case AppConstants.basicCalculatorRoute:
+        return MaterialPageRoute(
+          builder: (context) => FeatureLoader.loadFeature(
+            'basic_calculator_screen',
+            () => const LazyBasicCalculatorScreen(),
+          ),
+          settings: settings,
+        );
+
+      case AppConstants.statisticsCalculatorRoute:
+        return MaterialPageRoute(
+          builder: (context) => FeatureLoader.loadFeature(
+            'statistics_calculator_screen',
+            () => const LazyStatisticsCalculatorScreen(),
           ),
           settings: settings,
         );
@@ -290,6 +320,102 @@ class PlaceholderHelpScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Lazy wrapper for MathematicsScreen
+class LazyMathematicsScreen extends StatelessWidget {
+  const LazyMathematicsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadMathematicsFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Mathematics', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Mathematics...');
+      },
+    );
+  }
+
+  Future<Widget> _loadMathematicsFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createMathematicsScreen();
+  }
+
+  Widget _createMathematicsScreen() {
+    return const MathematicsScreen();
+  }
+}
+
+/// Lazy wrapper for BasicCalculatorScreen
+class LazyBasicCalculatorScreen extends StatelessWidget {
+  const LazyBasicCalculatorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadBasicCalculatorFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Basic Calculator', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Basic Calculator...');
+      },
+    );
+  }
+
+  Future<Widget> _loadBasicCalculatorFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createBasicCalculatorScreen();
+  }
+
+  Widget _createBasicCalculatorScreen() {
+    return const BasicCalculatorScreen();
+  }
+}
+
+/// Lazy wrapper for StatisticsCalculatorScreen
+class LazyStatisticsCalculatorScreen extends StatelessWidget {
+  const LazyStatisticsCalculatorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadStatisticsCalculatorFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Statistics Calculator', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Statistics Calculator...');
+      },
+    );
+  }
+
+  Future<Widget> _loadStatisticsCalculatorFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createStatisticsCalculatorScreen();
+  }
+
+  Widget _createStatisticsCalculatorScreen() {
+    return const StatisticsCalculatorScreen();
   }
 }
 

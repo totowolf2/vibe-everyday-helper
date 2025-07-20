@@ -39,6 +39,12 @@ dependencies:
   # Help system dependencies
   introduction_screen: ^3.1.12  # For onboarding tutorials
   # Removed unused dependencies: super_tooltip and shared_preferences
+  
+  # Mathematics feature dependencies
+  math_expressions: ^2.6.0  # Expression parsing and evaluation for calculator
+  decimal: ^3.0.2  # Precise decimal calculations without floating-point errors
+  statistics: ^1.0.8  # Statistical calculations (mean, median, standard deviation)
+  units_converter: ^2.0.1  # Comprehensive unit conversion library
 
 dev_dependencies:
   flutter_test:
@@ -99,5 +105,5 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/logoBG.png"
   min_sdk_android: 21

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/constants/app_constants.dart';
 
 class HelperTool {
   final String title;
@@ -24,7 +25,15 @@ class HelperTool {
         description:
             'Compare price per unit for different products to find the best value',
         icon: Icons.compare_arrows,
-        route: '/price-comparison',
+        route: AppConstants.priceComparisonRoute,
+        category: 'Calculations',
+      ),
+      const HelperTool(
+        title: 'Mathematics',
+        description:
+            'Access calculators, statistics, unit conversion, and mathematical tools',
+        icon: Icons.calculate,
+        route: AppConstants.mathematicsRoute,
         category: 'Calculations',
       ),
       // Future tools will be added here

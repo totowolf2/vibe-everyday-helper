@@ -7,6 +7,14 @@ class AppConstants {
   static const String homeRoute = '/';
   static const String priceComparisonRoute = '/price-comparison';
   static const String helpRoute = '/help';
+  
+  // Mathematics Routes
+  static const String mathematicsRoute = '/mathematics';
+  static const String basicCalculatorRoute = '/mathematics/basic-calculator';
+  static const String scientificCalculatorRoute = '/mathematics/scientific-calculator';
+  static const String statisticsCalculatorRoute = '/mathematics/statistics-calculator';
+  static const String unitConverterRoute = '/mathematics/unit-converter';
+  static const String percentageCalculatorRoute = '/mathematics/percentage-calculator';
 
   // UI Constants
   static const double defaultPadding = 16.0;

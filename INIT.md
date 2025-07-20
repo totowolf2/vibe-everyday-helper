@@ -1,10 +1,10 @@
 ## FEATURE:
 
-- The simple one is no longer useful because the pack can only contain one. Removing it makes it easier for users to use.
+- Create a second app that will be an app that combines calculations into categories. Each category will have programs for calculating different things. And create the first category to prepare, which is the mathematics category.
 
 ## USER STORY:
 
-Redundant copying leads to poor user experience.
+Users want an app that calculates the various things they encounter on a daily basis.
 
 ## DOCUMENTATION:
 
@@ -13,4 +13,6 @@ The project should be a `flutter`
 
 ## ACCEPTANCE CRITERIA:
 
-- UX/UI must be taken into account, no complexity required
+- UX/UI must be taken into account, no complexity required.
+- Easy to improve and further develop.
+- The interface is easy to use and has a uniform layout.
