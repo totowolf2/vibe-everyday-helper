@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/percentage_calculator_view_model.dart';
 import '../../../../shared/constants/app_constants.dart';
+import 'package:flutter/services.dart';
 
 class PercentageCalculatorScreen extends StatelessWidget {
   const PercentageCalculatorScreen({super.key});
@@ -31,10 +32,14 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
   void initState() {
     super.initState();
     _value1Controller.addListener(() {
-      context.read<PercentageCalculatorViewModel>().updateValue1(_value1Controller.text);
+      context.read<PercentageCalculatorViewModel>().updateValue1(
+        _value1Controller.text,
+      );
     });
     _value2Controller.addListener(() {
-      context.read<PercentageCalculatorViewModel>().updateValue2(_value2Controller.text);
+      context.read<PercentageCalculatorViewModel>().updateValue2(
+        _value2Controller.text,
+      );
     });
   }
 
@@ -99,32 +104,45 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.defaultPadding),
-          child: Column(
-            children: [
-              // Calculator Type Selector
-              _buildTypeSelector(context),
-              const SizedBox(height: AppConstants.defaultPadding),
-              // Input Section
-              _buildInputSection(context),
-              const SizedBox(height: AppConstants.defaultPadding),
-              // Results Section
-              Expanded(
-                child: Consumer<PercentageCalculatorViewModel>(
-                  builder: (context, viewModel, child) {
-                    if (viewModel.hasError) {
-                      return _buildErrorDisplay(context, viewModel.errorMessage!);
-                    } else if (viewModel.result.isNotEmpty) {
-                      return _buildResultsDisplay(context, viewModel);
-                    } else {
-                      return _buildInstructionsDisplay(context, viewModel);
-                    }
-                  },
-                ),
+        child: Column(
+          children: [
+            // Fixed top section with type selector and input
+            Padding(
+              padding: const EdgeInsets.all(AppConstants.defaultMargin),
+              child: Column(
+                children: [
+                  // Calculator Type Selector
+                  _buildTypeSelector(context),
+                  const SizedBox(height: AppConstants.defaultMargin),
+                  // Input Section
+                  _buildInputSection(context),
+                ],
               ),
-            ],
-          ),
+            ),
+            // Flexible results section
+            Expanded(
+              child: Consumer<PercentageCalculatorViewModel>(
+                builder: (context, viewModel, child) {
+                  if (viewModel.hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.all(AppConstants.defaultMargin),
+                      child: _buildErrorDisplay(
+                        context,
+                        viewModel.errorMessage!,
+                      ),
+                    );
+                  } else if (viewModel.result.isNotEmpty) {
+                    return _buildResultsDisplay(context, viewModel);
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(AppConstants.defaultMargin),
+                      child: _buildInstructionsDisplay(context, viewModel),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -149,12 +167,17 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
             Consumer<PercentageCalculatorViewModel>(
               builder: (context, viewModel, child) {
                 return Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: PercentageCalculatorViewModel.commonTypes.map((type) {
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: PercentageCalculatorViewModel.commonTypes.map((
+                    type,
+                  ) {
                     final isSelected = viewModel.currentType == type;
                     return FilterChip(
-                      label: Text(viewModel.getTypeTitle(type)),
+                      label: Text(
+                        viewModel.getTypeTitle(type),
+                        style: const TextStyle(fontSize: 12),
+                      ),
                       selected: isSelected,
                       onSelected: (selected) {
                         if (selected) {
@@ -163,8 +186,12 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                           _value2Controller.clear();
                         }
                       },
-                      backgroundColor: isSelected ? theme.colorScheme.primaryContainer : null,
+                      backgroundColor: isSelected
+                          ? theme.colorScheme.primaryContainer
+                          : null,
                       selectedColor: theme.colorScheme.primaryContainer,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
                     );
                   }).toList(),
                 );
@@ -177,26 +204,37 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                   title: const Text('More Options'),
                   children: [
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 6,
+                      runSpacing: 6,
                       children: PercentageCalculatorViewModel.allTypes
-                          .where((type) => !PercentageCalculatorViewModel.commonTypes.contains(type))
+                          .where(
+                            (type) => !PercentageCalculatorViewModel.commonTypes
+                                .contains(type),
+                          )
                           .map((type) {
-                        final isSelected = viewModel.currentType == type;
-                        return FilterChip(
-                          label: Text(viewModel.getTypeTitle(type)),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            if (selected) {
-                              viewModel.setCalculationType(type);
-                              _value1Controller.clear();
-                              _value2Controller.clear();
-                            }
-                          },
-                          backgroundColor: isSelected ? theme.colorScheme.primaryContainer : null,
-                          selectedColor: theme.colorScheme.primaryContainer,
-                        );
-                      }).toList(),
+                            final isSelected = viewModel.currentType == type;
+                            return FilterChip(
+                              label: Text(
+                                viewModel.getTypeTitle(type),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  viewModel.setCalculationType(type);
+                                  _value1Controller.clear();
+                                  _value2Controller.clear();
+                                }
+                              },
+                              backgroundColor: isSelected
+                                  ? theme.colorScheme.primaryContainer
+                                  : null,
+                              selectedColor: theme.colorScheme.primaryContainer,
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.compact,
+                            );
+                          })
+                          .toList(),
                     ),
                   ],
                 );
@@ -227,7 +265,9 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                 Text(
                   viewModel.getTypeDescription(viewModel.currentType),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: AppConstants.defaultPadding),
@@ -237,11 +277,20 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                       child: TextField(
                         controller: _value1Controller,
                         decoration: InputDecoration(
-                          labelText: viewModel.getValue1Label(viewModel.currentType),
+                          labelText: viewModel.getValue1Label(
+                            viewModel.currentType,
+                          ),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.input),
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,}$'),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: AppConstants.defaultMargin),
@@ -249,11 +298,20 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                       child: TextField(
                         controller: _value2Controller,
                         decoration: InputDecoration(
-                          labelText: viewModel.getValue2Label(viewModel.currentType),
+                          labelText: viewModel.getValue2Label(
+                            viewModel.currentType,
+                          ),
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.input),
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,}$'),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -266,37 +324,47 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
     );
   }
 
-  Widget _buildResultsDisplay(BuildContext context, PercentageCalculatorViewModel viewModel) {
+  Widget _buildResultsDisplay(
+    BuildContext context,
+    PercentageCalculatorViewModel viewModel,
+  ) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppConstants.defaultMargin),
       child: Column(
         children: [
           _buildMainResultCard(context, viewModel),
-          const SizedBox(height: AppConstants.defaultPadding),
+          const SizedBox(height: AppConstants.defaultMargin),
           _buildDetailedResults(context, viewModel),
           if (viewModel.calculations.isNotEmpty) ...[
-            const SizedBox(height: AppConstants.defaultPadding),
+            const SizedBox(height: AppConstants.defaultMargin),
             _buildHistoryCard(context, viewModel),
           ],
+          // Add bottom padding for better scrolling
+          const SizedBox(height: AppConstants.defaultMargin),
         ],
       ),
     );
   }
 
-  Widget _buildMainResultCard(BuildContext context, PercentageCalculatorViewModel viewModel) {
+  Widget _buildMainResultCard(
+    BuildContext context,
+    PercentageCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
 
     return Card(
       color: theme.colorScheme.primaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(AppConstants.defaultPadding),
+        padding: const EdgeInsets.all(AppConstants.defaultMargin),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.percent,
-              size: 48,
+              size: 32,
               color: theme.colorScheme.onPrimaryContainer,
             ),
-            const SizedBox(height: AppConstants.defaultMargin),
+            const SizedBox(height: AppConstants.defaultMargin / 2),
             Text(
               'Result',
               style: theme.textTheme.titleMedium?.copyWith(
@@ -307,11 +375,12 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
             const SizedBox(height: AppConstants.defaultMargin / 2),
             Text(
               viewModel.result,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'monospace',
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -319,7 +388,10 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
     );
   }
 
-  Widget _buildDetailedResults(BuildContext context, PercentageCalculatorViewModel viewModel) {
+  Widget _buildDetailedResults(
+    BuildContext context,
+    PercentageCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
     final details = viewModel.getDetailedResults();
 
@@ -344,10 +416,7 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      entry.key,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                    Text(entry.key, style: theme.textTheme.bodyMedium),
                     Text(
                       entry.value,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -365,7 +434,10 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
     );
   }
 
-  Widget _buildHistoryCard(BuildContext context, PercentageCalculatorViewModel viewModel) {
+  Widget _buildHistoryCard(
+    BuildContext context,
+    PercentageCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
 
     return Card(
@@ -400,7 +472,9 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                     Text(
                       calc.description,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.8,
+                        ),
                       ),
                     ),
                     Text(
@@ -464,39 +538,40 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
     );
   }
 
-  Widget _buildInstructionsDisplay(BuildContext context, PercentageCalculatorViewModel viewModel) {
+  Widget _buildInstructionsDisplay(
+    BuildContext context,
+    PercentageCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
 
     return Center(
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(AppConstants.defaultPadding * 2),
+          padding: const EdgeInsets.all(AppConstants.defaultPadding),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.percent,
-                color: theme.primaryColor,
-                size: 64,
-              ),
-              const SizedBox(height: AppConstants.defaultPadding),
+              Icon(Icons.percent, color: theme.primaryColor, size: 48),
+              const SizedBox(height: AppConstants.defaultMargin),
               Text(
                 viewModel.getTypeTitle(viewModel.currentType),
-                style: theme.textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppConstants.defaultMargin),
+              const SizedBox(height: AppConstants.defaultMargin / 2),
               Text(
                 viewModel.getTypeDescription(viewModel.currentType),
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodySmall,
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: AppConstants.defaultPadding),
+              const SizedBox(height: AppConstants.defaultMargin),
               const Text(
-                'Enter values in the fields above to calculate',
-                style: TextStyle(fontSize: 14),
+                'Enter values above to calculate',
+                style: TextStyle(fontSize: 12),
                 textAlign: TextAlign.center,
               ),
             ],
