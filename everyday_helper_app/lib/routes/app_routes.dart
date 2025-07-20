@@ -7,6 +7,7 @@ import '../features/price_comparison/presentation/pages/help_screen.dart';
 import '../features/mathematics/presentation/pages/mathematics_screen.dart';
 import '../features/mathematics/presentation/pages/basic_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/statistics_calculator_screen.dart';
+import '../features/mathematics/presentation/pages/percentage_calculator_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -59,6 +60,15 @@ class AppRoutes {
           builder: (context) => FeatureLoader.loadFeature(
             'statistics_calculator_screen',
             () => const LazyStatisticsCalculatorScreen(),
+          ),
+          settings: settings,
+        );
+
+      case AppConstants.percentageCalculatorRoute:
+        return MaterialPageRoute(
+          builder: (context) => FeatureLoader.loadFeature(
+            'percentage_calculator_screen',
+            () => const LazyPercentageCalculatorScreen(),
           ),
           settings: settings,
         );
@@ -416,6 +426,38 @@ class LazyStatisticsCalculatorScreen extends StatelessWidget {
 
   Widget _createStatisticsCalculatorScreen() {
     return const StatisticsCalculatorScreen();
+  }
+}
+
+/// Lazy wrapper for PercentageCalculatorScreen
+class LazyPercentageCalculatorScreen extends StatelessWidget {
+  const LazyPercentageCalculatorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadPercentageCalculatorFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Percentage Calculator', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Percentage Calculator...');
+      },
+    );
+  }
+
+  Future<Widget> _loadPercentageCalculatorFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createPercentageCalculatorScreen();
+  }
+
+  Widget _createPercentageCalculatorScreen() {
+    return const PercentageCalculatorScreen();
   }
 }
 
