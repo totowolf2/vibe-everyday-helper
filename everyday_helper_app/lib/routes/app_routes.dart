@@ -9,6 +9,7 @@ import '../features/mathematics/presentation/pages/basic_calculator_screen.dart'
 import '../features/mathematics/presentation/pages/statistics_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/percentage_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/unit_converter_screen.dart';
+import '../features/tax_calculator/presentation/pages/tax_calculator_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -83,6 +84,12 @@ class AppRoutes {
           settings: settings,
         );
 
+      case AppConstants.taxCalculatorRoute:
+        return MaterialPageRoute(
+          builder: (context) => const TaxCalculatorScreen(),
+          settings: settings,
+        );
+
       default:
         return MaterialPageRoute(
           builder: (context) => const HomeScreen(),
@@ -103,6 +110,10 @@ class AppRoutes {
 
   static void navigateToHelp(BuildContext context) {
     Navigator.of(context).pushNamed(AppConstants.helpRoute);
+  }
+
+  static void navigateToTaxCalculator(BuildContext context) {
+    Navigator.of(context).pushNamed(AppConstants.taxCalculatorRoute);
   }
 }
 
@@ -500,6 +511,38 @@ class LazyUnitConverterScreen extends StatelessWidget {
 
   Widget _createUnitConverterScreen() {
     return const UnitConverterScreen();
+  }
+}
+
+/// Lazy wrapper for TaxCalculatorScreen
+class LazyTaxCalculatorScreen extends StatelessWidget {
+  const LazyTaxCalculatorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Widget>(
+      future: _loadTaxCalculatorFeature(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildErrorScreen('Tax Calculator', snapshot.error!);
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!;
+        }
+
+        return _buildLoadingScreen('Loading Tax Calculator...');
+      },
+    );
+  }
+
+  Future<Widget> _loadTaxCalculatorFeature() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _createTaxCalculatorScreen();
+  }
+
+  Widget _createTaxCalculatorScreen() {
+    return const TaxCalculatorScreen();
   }
 }
 

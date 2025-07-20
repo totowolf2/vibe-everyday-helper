@@ -45,6 +45,10 @@ dependencies:
   decimal: ^3.0.2  # Precise decimal calculations without floating-point errors
   statistics: ^1.0.8  # Statistical calculations (mean, median, standard deviation)
   units_converter: ^2.0.1  # Comprehensive unit conversion library
+  
+  # Tax calculator dependencies
+  intl: ^0.20.2  # Date/currency formatting for tax calculations
+  shared_preferences: ^2.2.0  # Local storage for tax calculation history
 
 dev_dependencies:
   flutter_test:

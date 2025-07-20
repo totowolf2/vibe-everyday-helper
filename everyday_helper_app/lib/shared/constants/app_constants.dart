@@ -15,6 +15,12 @@ class AppConstants {
   static const String statisticsCalculatorRoute = '/mathematics/statistics-calculator';
   static const String unitConverterRoute = '/mathematics/unit-converter';
   static const String percentageCalculatorRoute = '/mathematics/percentage-calculator';
+  
+  // Tax Calculator Routes
+  static const String taxCalculatorRoute = '/tax-calculator';
+  static const String taxInputRoute = '/tax-calculator/input';
+  static const String taxResultsRoute = '/tax-calculator/results';
+  static const String taxHelpRoute = '/tax-calculator/help';
 
   // UI Constants
   static const double defaultPadding = 16.0;

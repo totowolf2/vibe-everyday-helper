@@ -36,6 +36,14 @@ class HelperTool {
         route: AppConstants.mathematicsRoute,
         category: 'Calculations',
       ),
+      const HelperTool(
+        title: 'Thai Tax Calculator',
+        description:
+            'Calculate personal income tax in Thailand with allowances and deductions',
+        icon: Icons.account_balance,
+        route: AppConstants.taxCalculatorRoute,
+        category: 'Calculations',
+      ),
       // Future tools will be added here
     ];
   }

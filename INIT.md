@@ -1,15 +1,23 @@
 ## FEATURE:
 
-- Create a second app that will be an app that combines calculations into categories. Each category will have programs for calculating different things. And create the first category to prepare, which is the mathematics category.
+- สร้างแอปที่สาม เป็นตัวช่วยเรื่องภาษี
 
 ## USER STORY:
 
-Users want an app that calculates the various things they encounter on a daily basis.
+อยากได้ App ช่วยคำนวนภาษีและเรื่องลดหย่อนภาษี
 
 ## DOCUMENTATION:
 
 The project should be a `flutter`
 - https://docs.flutter.dev/get-started/fundamentals
+การคำนวณภาษี
+- https://www.rd.go.th/63765.html
+การคํานวณลดหย่อนภาษี
+- https://www.rd.go.th/59674.html
+
+## Example of a reference basin
+- https://taepras.github.io/howtotax
+- https://www.kasikornbank.com/th/tax/pages/calculate_tax.aspx
 
 ## ACCEPTANCE CRITERIA:
 
