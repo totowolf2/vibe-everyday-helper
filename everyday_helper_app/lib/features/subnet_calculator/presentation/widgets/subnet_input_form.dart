@@ -14,48 +14,104 @@ class IpAddressInputFormatter extends TextInputFormatter {
     // Allow only numbers, dots, and slashes for IP addresses with optional CIDR
     String filteredString = newValue.text.replaceAll(RegExp(r'[^0-9./]'), '');
 
-    // Auto-insert dots after every 3 digits for IP address formatting
+    // Prevent consecutive dots
+    filteredString = filteredString.replaceAll(RegExp(r'\.{2,}'), '.');
+    
+    // Prevent starting with dot
+    if (filteredString.startsWith('.')) {
+      filteredString = filteredString.substring(1);
+    }
+
+    // Validate IPv4 format and constraints
     if (filteredString.length > oldValue.text.length) {
       // Only format if we're adding characters (not deleting)
       final parts = filteredString.split('.');
-      if (parts.isNotEmpty) {
-        String formattedText = '';
-        for (int i = 0; i < parts.length; i++) {
-          String part = parts[i];
+      
+      // Limit to maximum 4 octets
+      if (parts.length > 4) {
+        return oldValue;
+      }
 
-          // Limit each IP part to maximum 3 digits
-          if (part.contains('/')) {
-            // Handle CIDR notation
-            final cidrParts = part.split('/');
-            if (cidrParts[0].length > 3) {
-              cidrParts[0] = cidrParts[0].substring(0, 3);
+      String formattedText = '';
+      for (int i = 0; i < parts.length; i++) {
+        String part = parts[i];
+
+        if (part.contains('/')) {
+          // Handle CIDR notation
+          final cidrParts = part.split('/');
+          String octet = cidrParts[0];
+          
+          // Validate octet (0-255)
+          if (octet.isNotEmpty) {
+            if (octet.length > 3) {
+              octet = octet.substring(0, 3);
             }
-            formattedText += cidrParts.join('/');
-          } else if (part.length > 3) {
-            // Limit to 3 digits max per IP part
-            if (i < 3) {
-              // Move extra digits to next part only if not at last part
+            
+            final octetValue = int.tryParse(octet);
+            if (octetValue != null && octetValue > 255) {
+              // If value exceeds 255, truncate to valid range
+              octet = '255';
+            }
+          }
+          
+          // Validate CIDR (0-32)
+          if (cidrParts.length > 1 && cidrParts[1].isNotEmpty) {
+            final cidrValue = int.tryParse(cidrParts[1]);
+            if (cidrValue != null && cidrValue > 32) {
+              cidrParts[1] = '32';
+            }
+          }
+          
+          formattedText += '$octet/${cidrParts.length > 1 ? cidrParts[1] : ''}';
+        } else {
+          // Regular IP octet
+          if (part.length > 3) {
+            // Move extra digits to next part only if not at last part and under 4 parts
+            if (i < 3 && parts.length < 4) {
               final remainingDigits = part.substring(3);
-              formattedText +=
-                  '${part.substring(0, 3)}.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+              part = part.substring(0, 3);
+              
+              // Validate current octet
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+              
+              formattedText += '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
             } else {
-              // Last part: just truncate to 3 digits
-              formattedText += part.substring(0, 3);
+              // Last part or max parts reached: just truncate to 3 digits
+              part = part.substring(0, 3);
+              
+              // Validate octet
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+              
+              formattedText += part;
             }
-          } else if (part.length == 3 &&
-              i < 3 &&
-              !oldValue.text.endsWith('.')) {
-            // Auto-add dot after 3 digits
-            formattedText += '$part.';
           } else {
-            formattedText += part;
-            if (i < parts.length - 1) {
-              formattedText += '.';
+            // Validate octet if complete (3 digits or user stops typing)
+            if (part.isNotEmpty) {
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+            }
+            
+            if (part.length == 3 && i < 3 && !oldValue.text.endsWith('.') && parts.length < 4) {
+              // Auto-add dot after 3 digits
+              formattedText += '$part.';
+            } else {
+              formattedText += part;
+              if (i < parts.length - 1) {
+                formattedText += '.';
+              }
             }
           }
         }
-        filteredString = formattedText;
       }
+      filteredString = formattedText;
     }
 
     return TextEditingValue(
@@ -74,31 +130,66 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
     // Allow only numbers and dots for subnet masks and CIDR numbers
     String filteredString = newValue.text.replaceAll(RegExp(r'[^0-9.]'), '');
 
+    // Prevent consecutive dots
+    filteredString = filteredString.replaceAll(RegExp(r'\.{2,}'), '.');
+    
+    // Prevent starting with dot
+    if (filteredString.startsWith('.')) {
+      filteredString = filteredString.substring(1);
+    }
+
     // Auto-insert dots after every 3 digits for subnet mask formatting
     if (filteredString.length > oldValue.text.length) {
       // Only format if we're adding characters (not deleting)
       if (filteredString.contains('.')) {
         // Already has dots - treat as subnet mask
         final parts = filteredString.split('.');
-        if (parts.isNotEmpty) {
-          String formattedText = '';
-          for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
+        
+        // Limit to maximum 4 octets for subnet mask
+        if (parts.length > 4) {
+          return oldValue;
+        }
 
-            // Limit each subnet mask part to maximum 3 digits
-            if (part.length > 3) {
-              if (i < 3) {
-                // Move extra digits to next part
-                final remainingDigits = part.substring(3);
-                formattedText +=
-                    '${part.substring(0, 3)}.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
-              } else {
-                // Last part: truncate to 3 digits
-                formattedText += part.substring(0, 3);
+        String formattedText = '';
+        for (int i = 0; i < parts.length; i++) {
+          String part = parts[i];
+
+          // Limit each subnet mask part to maximum 3 digits and validate range
+          if (part.length > 3) {
+            if (i < 3 && parts.length < 4) {
+              // Move extra digits to next part
+              final remainingDigits = part.substring(3);
+              part = part.substring(0, 3);
+              
+              // Validate octet (0-255)
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
               }
-            } else if (part.length == 3 &&
-                i < 3 &&
-                !oldValue.text.endsWith('.')) {
+              
+              formattedText += '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+            } else {
+              // Last part or max parts: truncate to 3 digits
+              part = part.substring(0, 3);
+              
+              // Validate octet (0-255)
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+              
+              formattedText += part;
+            }
+          } else {
+            // Validate octet if not empty
+            if (part.isNotEmpty) {
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+            }
+            
+            if (part.length == 3 && i < 3 && !oldValue.text.endsWith('.') && parts.length < 4) {
               // Auto-add dot after 3 digits
               formattedText += '$part.';
             } else {
@@ -108,28 +199,46 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
               }
             }
           }
-          filteredString = formattedText;
         }
+        filteredString = formattedText;
       } else {
         // No dots yet - could be subnet mask being typed or CIDR
-        // If length > 2 and user is typing numbers that look like subnet mask, add dots
-        if (filteredString.length == 3 && !oldValue.text.endsWith('.')) {
-          // Auto-add dot after 3 digits (subnet mask format)
-          filteredString = '$filteredString.';
+        // For CIDR, validate range 0-32
+        if (filteredString.length <= 2) {
+          // Could be CIDR (0-32)
+          final cidrValue = int.tryParse(filteredString);
+          if (cidrValue != null && cidrValue > 32) {
+            filteredString = '32';
+          }
+        } else if (filteredString.length == 3 && !oldValue.text.endsWith('.')) {
+          // Could be start of subnet mask - validate first octet
+          final octetValue = int.tryParse(filteredString);
+          if (octetValue != null && octetValue <= 255) {
+            // Auto-add dot after 3 digits (subnet mask format)
+            filteredString = '$filteredString.';
+          } else {
+            // Invalid octet value, cap at 255
+            filteredString = '255.';
+          }
         } else if (filteredString.length > 3) {
           // More than 3 digits without dots - format as subnet mask
           String formattedText = '';
           for (int i = 0; i < filteredString.length; i += 3) {
             if (i > 0) formattedText += '.';
-            final endIndex = (i + 3 < filteredString.length)
-                ? i + 3
-                : filteredString.length;
-            formattedText += filteredString.substring(i, endIndex);
+            final endIndex = (i + 3 < filteredString.length) ? i + 3 : filteredString.length;
+            String part = filteredString.substring(i, endIndex);
+            
+            // Validate each octet
+            if (part.isNotEmpty) {
+              final octetValue = int.tryParse(part);
+              if (octetValue != null && octetValue > 255) {
+                part = '255';
+              }
+            }
+            
+            formattedText += part;
           }
           filteredString = formattedText;
-        } else if (filteredString.length <= 2) {
-          // 1-2 digits could be CIDR - don't format yet, let user decide
-          // No change needed
         }
       }
     }
