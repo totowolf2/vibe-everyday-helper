@@ -17,11 +17,22 @@ class SubnetCalculatorScreen extends StatefulWidget {
 class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  SubnetCalculatorViewModel? _viewModel;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // Listen to tab controller changes (including swipes)
+    _tabController.addListener(_onTabChange);
+  }
+
+  void _onTabChange() {
+    if (_viewModel != null && _tabController.indexIsChanging) {
+      final newTab = SubnetCalculatorTab.values[_tabController.index];
+      _viewModel!.switchTab(newTab);
+    }
   }
 
   @override
@@ -37,16 +48,9 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
       child: Builder(
         builder: (context) {
           final viewModel = context.watch<SubnetCalculatorViewModel>();
-          
-          // Sync TabController with ViewModel's current tab
-          final tabIndex = viewModel.currentTab.index;
-          if (_tabController.index != tabIndex) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (_tabController.index != tabIndex) {
-                _tabController.animateTo(tabIndex);
-              }
-            });
-          }
+
+          // Store reference to ViewModel for tab change listener
+          _viewModel = viewModel;
 
           return Scaffold(
             appBar: AppBar(
@@ -57,20 +61,6 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.white70,
                 indicatorColor: Colors.white,
-                onTap: (index) {
-                  final viewModel = context.read<SubnetCalculatorViewModel>();
-                  switch (index) {
-                    case 0:
-                      viewModel.switchTab(SubnetCalculatorTab.calculation);
-                      break;
-                    case 1:
-                      viewModel.switchTab(SubnetCalculatorTab.validation);
-                      break;
-                    case 2:
-                      viewModel.switchTab(SubnetCalculatorTab.history);
-                      break;
-                  }
-                },
                 tabs: const [
                   Tab(
                     icon: Icon(Icons.calculate),

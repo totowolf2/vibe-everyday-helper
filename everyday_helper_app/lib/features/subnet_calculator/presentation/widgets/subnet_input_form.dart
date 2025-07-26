@@ -3,13 +3,41 @@ import 'package:provider/provider.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../view_models/subnet_calculator_view_model.dart';
 
-class SubnetInputForm extends StatelessWidget {
+class SubnetInputForm extends StatefulWidget {
   const SubnetInputForm({super.key});
+
+  @override
+  State<SubnetInputForm> createState() => _SubnetInputFormState();
+}
+
+class _SubnetInputFormState extends State<SubnetInputForm> {
+  final TextEditingController _ipAddressController = TextEditingController();
+  final TextEditingController _maskOrCidrController = TextEditingController();
+
+  @override
+  void dispose() {
+    _ipAddressController.dispose();
+    _maskOrCidrController.dispose();
+    super.dispose();
+  }
+
+  void _initializeControllers(SubnetCalculatorViewModel viewModel) {
+    // Initialize controllers with current ViewModel values
+    if (_ipAddressController.text != viewModel.ipAddress) {
+      _ipAddressController.text = viewModel.ipAddress;
+    }
+    if (_maskOrCidrController.text != viewModel.maskOrCidr) {
+      _maskOrCidrController.text = viewModel.maskOrCidr;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<SubnetCalculatorViewModel>(
       builder: (context, viewModel, child) {
+        // Initialize controllers with ViewModel values
+        _initializeControllers(viewModel);
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -37,7 +65,7 @@ class SubnetInputForm extends StatelessWidget {
 
                 // IP Address input
                 TextFormField(
-                  initialValue: viewModel.ipAddress,
+                  controller: _ipAddressController,
                   decoration: InputDecoration(
                     labelText: 'IP Address',
                     hintText:
@@ -49,13 +77,15 @@ class SubnetInputForm extends StatelessWidget {
                     helperMaxLines: 2,
                   ),
                   keyboardType: TextInputType.text,
-                  onChanged: viewModel.updateIpAddress,
+                  onChanged: (value) {
+                    viewModel.updateIpAddress(value);
+                  },
                 ),
                 const SizedBox(height: 16),
 
                 // Subnet Mask or CIDR input
                 TextFormField(
-                  initialValue: viewModel.maskOrCidr,
+                  controller: _maskOrCidrController,
                   decoration: InputDecoration(
                     labelText:
                         'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai
@@ -67,7 +97,9 @@ class SubnetInputForm extends StatelessWidget {
                     helperMaxLines: 2,
                   ),
                   keyboardType: TextInputType.text,
-                  onChanged: viewModel.updateMaskOrCidr,
+                  onChanged: (value) {
+                    viewModel.updateMaskOrCidr(value);
+                  },
                 ),
 
                 if (viewModel.hasCalculationError) ...[
@@ -138,6 +170,8 @@ class SubnetInputForm extends StatelessWidget {
                       onPressed: viewModel.isLoading
                           ? null
                           : () {
+                              _ipAddressController.clear();
+                              _maskOrCidrController.clear();
                               viewModel.clearCalculationInputs();
                             },
                       icon: const Icon(Icons.clear),

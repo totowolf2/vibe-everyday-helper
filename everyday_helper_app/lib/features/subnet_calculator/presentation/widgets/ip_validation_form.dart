@@ -15,6 +15,9 @@ class _IpValidationFormState extends State<IpValidationForm>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _multipleIpsController = TextEditingController();
+  final TextEditingController _networkAddressController = TextEditingController();
+  final TextEditingController _networkMaskController = TextEditingController();
+  final TextEditingController _testIpController = TextEditingController();
 
   @override
   void initState() {
@@ -22,10 +25,26 @@ class _IpValidationFormState extends State<IpValidationForm>
     _tabController = TabController(length: 2, vsync: this);
   }
 
+  void _initializeControllers(SubnetCalculatorViewModel viewModel) {
+    // Initialize controllers with current ViewModel values
+    if (_networkAddressController.text != viewModel.networkAddress) {
+      _networkAddressController.text = viewModel.networkAddress;
+    }
+    if (_networkMaskController.text != viewModel.networkMaskOrCidr) {
+      _networkMaskController.text = viewModel.networkMaskOrCidr;
+    }
+    if (_testIpController.text != viewModel.testIpAddress) {
+      _testIpController.text = viewModel.testIpAddress;
+    }
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
     _multipleIpsController.dispose();
+    _networkAddressController.dispose();
+    _networkMaskController.dispose();
+    _testIpController.dispose();
     super.dispose();
   }
 
@@ -33,6 +52,9 @@ class _IpValidationFormState extends State<IpValidationForm>
   Widget build(BuildContext context) {
     return Consumer<SubnetCalculatorViewModel>(
       builder: (context, viewModel, child) {
+        // Initialize controllers with ViewModel values
+        _initializeControllers(viewModel);
+        
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -139,7 +161,7 @@ class _IpValidationFormState extends State<IpValidationForm>
       children: [
         // Network Address input
         TextFormField(
-          initialValue: viewModel.networkAddress,
+          controller: _networkAddressController,
           decoration: InputDecoration(
             labelText: 'Network Address',
             hintText:
@@ -150,13 +172,15 @@ class _IpValidationFormState extends State<IpValidationForm>
                 'ใส่ Network Address ของเครือข่ายที่ต้องการตรวจสอบ', // 'Enter network address to validate against' in Thai
           ),
           keyboardType: TextInputType.text,
-          onChanged: viewModel.updateNetworkAddress,
+          onChanged: (value) {
+            viewModel.updateNetworkAddress(value);
+          },
         ),
         const SizedBox(height: 16),
 
         // Subnet Mask or CIDR input
         TextFormField(
-          initialValue: viewModel.networkMaskOrCidr,
+          controller: _networkMaskController,
           decoration: InputDecoration(
             labelText: 'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai
             hintText: '255.255.255.0 หรือ 24', // 'or 24' in Thai
@@ -166,7 +190,9 @@ class _IpValidationFormState extends State<IpValidationForm>
                 'ใส่ Subnet Mask หรือ CIDR ของเครือข่าย', // 'Enter subnet mask or CIDR of the network' in Thai
           ),
           keyboardType: TextInputType.text,
-          onChanged: viewModel.updateNetworkMaskOrCidr,
+          onChanged: (value) {
+            viewModel.updateNetworkMaskOrCidr(value);
+          },
         ),
       ],
     );
@@ -177,7 +203,7 @@ class _IpValidationFormState extends State<IpValidationForm>
       children: [
         // Single IP input
         TextFormField(
-          initialValue: viewModel.testIpAddress,
+          controller: _testIpController,
           decoration: InputDecoration(
             labelText:
                 'IP Address ที่ต้องการตรวจสอบ', // 'IP Address to validate' in Thai
@@ -186,7 +212,9 @@ class _IpValidationFormState extends State<IpValidationForm>
             prefixIcon: const Icon(Icons.computer),
           ),
           keyboardType: TextInputType.text,
-          onChanged: viewModel.updateTestIpAddress,
+          onChanged: (value) {
+            viewModel.updateTestIpAddress(value);
+          },
         ),
         const SizedBox(height: 16),
 
@@ -222,6 +250,9 @@ class _IpValidationFormState extends State<IpValidationForm>
               onPressed: viewModel.isLoading
                   ? null
                   : () {
+                      _networkAddressController.clear();
+                      _networkMaskController.clear();
+                      _testIpController.clear();
                       viewModel.clearValidationInputs();
                     },
               icon: const Icon(Icons.clear),
@@ -293,6 +324,8 @@ class _IpValidationFormState extends State<IpValidationForm>
               onPressed: viewModel.isLoading
                   ? null
                   : () {
+                      _networkAddressController.clear();
+                      _networkMaskController.clear();
                       _multipleIpsController.clear();
                       viewModel.clearValidationInputs();
                     },
