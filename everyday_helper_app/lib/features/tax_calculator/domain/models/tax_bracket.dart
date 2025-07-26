@@ -14,9 +14,9 @@ class TaxBracket {
     Decimal? maxIncome,
     Decimal? taxRate,
     this.description = '',
-  })  : minIncome = minIncome ?? _zero,
-        maxIncome = maxIncome ?? _maxValue,
-        taxRate = taxRate ?? _zero;
+  }) : minIncome = minIncome ?? _zero,
+       maxIncome = maxIncome ?? _maxValue,
+       taxRate = taxRate ?? _zero;
 
   static List<TaxBracket> get thaiTaxBrackets2024 {
     return [
@@ -72,7 +72,8 @@ class TaxBracket {
   }
 
   bool appliesToIncome(Decimal income) {
-    return income >= minIncome && (maxIncome == _maxValue || income <= maxIncome);
+    return income >= minIncome &&
+        (maxIncome == _maxValue || income <= maxIncome);
   }
 
   Decimal calculateTaxForBracket(Decimal income) {
@@ -80,8 +81,8 @@ class TaxBracket {
       return _zero;
     }
 
-    final taxableInThisBracket = (maxIncome == _maxValue) 
-        ? income - minIncome 
+    final taxableInThisBracket = (maxIncome == _maxValue)
+        ? income - minIncome
         : (income < maxIncome ? income : maxIncome) - minIncome;
 
     if (taxableInThisBracket <= _zero) {
@@ -105,7 +106,8 @@ class TaxBracket {
   }
 
   String get formattedMinIncome => _formatCurrency(minIncome);
-  String get formattedMaxIncome => maxIncome == _maxValue ? 'and above' : _formatCurrency(maxIncome);
+  String get formattedMaxIncome =>
+      maxIncome == _maxValue ? 'and above' : _formatCurrency(maxIncome);
   String get formattedTaxRate => '${taxRate.toStringAsFixed(0)}%';
 
   String get rangeDescription {
@@ -116,10 +118,12 @@ class TaxBracket {
   }
 
   String _formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   Map<String, dynamic> toMap() {

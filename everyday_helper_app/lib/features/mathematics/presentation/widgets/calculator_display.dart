@@ -172,11 +172,7 @@ class CalculatorDisplay extends StatelessWidget {
       padding: const EdgeInsets.all(AppConstants.defaultPadding),
       child: Row(
         children: [
-          Icon(
-            Icons.error_outline,
-            color: theme.colorScheme.error,
-            size: 20,
-          ),
+          Icon(Icons.error_outline, color: theme.colorScheme.error, size: 20),
           const SizedBox(width: AppConstants.defaultMargin),
           Expanded(
             child: Text(

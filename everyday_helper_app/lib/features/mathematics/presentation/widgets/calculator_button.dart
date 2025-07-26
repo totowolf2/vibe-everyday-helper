@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/calculator_operation.dart';
 import '../../../../shared/constants/app_constants.dart';
 
-enum CalculatorButtonType {
-  number,
-  operator,
-  function,
-  control,
-  special,
-}
+enum CalculatorButtonType { number, operator, function, control, special }
 
 class CalculatorButton extends StatelessWidget {
   final String text;
@@ -67,11 +61,10 @@ class CalculatorButton extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: backgroundColor ?? buttonColors.backgroundColor,
-            borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
-            border: Border.all(
-              color: buttonColors.borderColor,
-              width: 1,
+            borderRadius: BorderRadius.circular(
+              AppConstants.defaultBorderRadius,
             ),
+            border: Border.all(color: buttonColors.borderColor, width: 1),
             boxShadow: isEnabled
                 ? [
                     BoxShadow(
@@ -192,10 +185,7 @@ class CalculatorButtonGrid extends StatelessWidget {
               return Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: spacing / 2),
-                  child: SizedBox(
-                    height: 56,
-                    child: button,
-                  ),
+                  child: SizedBox(height: 56, child: button),
                 ),
               );
             }).toList(),

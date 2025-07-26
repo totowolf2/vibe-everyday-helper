@@ -7,20 +7,26 @@ class AppConstants {
   static const String homeRoute = '/';
   static const String priceComparisonRoute = '/price-comparison';
   static const String helpRoute = '/help';
-  
+
   // Mathematics Routes
   static const String mathematicsRoute = '/mathematics';
   static const String basicCalculatorRoute = '/mathematics/basic-calculator';
-  static const String scientificCalculatorRoute = '/mathematics/scientific-calculator';
-  static const String statisticsCalculatorRoute = '/mathematics/statistics-calculator';
+  static const String scientificCalculatorRoute =
+      '/mathematics/scientific-calculator';
+  static const String statisticsCalculatorRoute =
+      '/mathematics/statistics-calculator';
   static const String unitConverterRoute = '/mathematics/unit-converter';
-  static const String percentageCalculatorRoute = '/mathematics/percentage-calculator';
-  
+  static const String percentageCalculatorRoute =
+      '/mathematics/percentage-calculator';
+
   // Tax Calculator Routes
   static const String taxCalculatorRoute = '/tax-calculator';
   static const String taxInputRoute = '/tax-calculator/input';
   static const String taxResultsRoute = '/tax-calculator/results';
   static const String taxHelpRoute = '/tax-calculator/help';
+
+  // Subnet Calculator Routes
+  static const String subnetCalculatorRoute = '/subnet-calculator';
 
   // UI Constants
   static const double defaultPadding = 16.0;

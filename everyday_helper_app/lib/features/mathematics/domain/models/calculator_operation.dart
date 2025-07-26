@@ -4,7 +4,7 @@ enum OperationType {
   subtract,
   multiply,
   divide,
-  
+
   // Scientific operations
   sin,
   cos,
@@ -17,13 +17,13 @@ enum OperationType {
   exp,
   power,
   sqrt,
-  
+
   // Special operations
   percentage,
   factorial,
   pi,
   e,
-  
+
   // Control operations
   clear,
   clearEntry,
@@ -328,7 +328,7 @@ class OperationValidator {
         }
       }
     }
-    
+
     if (openParens > 0) {
       return 'Unmatched opening parenthesis';
     }

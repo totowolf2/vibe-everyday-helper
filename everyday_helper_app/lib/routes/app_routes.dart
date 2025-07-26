@@ -10,6 +10,7 @@ import '../features/mathematics/presentation/pages/statistics_calculator_screen.
 import '../features/mathematics/presentation/pages/percentage_calculator_screen.dart';
 import '../features/mathematics/presentation/pages/unit_converter_screen.dart';
 import '../features/tax_calculator/presentation/pages/tax_calculator_screen.dart';
+import '../features/subnet_calculator/presentation/pages/subnet_calculator_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -87,6 +88,12 @@ class AppRoutes {
       case AppConstants.taxCalculatorRoute:
         return MaterialPageRoute(
           builder: (context) => const TaxCalculatorScreen(),
+          settings: settings,
+        );
+
+      case AppConstants.subnetCalculatorRoute:
+        return MaterialPageRoute(
+          builder: (context) => const SubnetCalculatorScreen(),
           settings: settings,
         );
 

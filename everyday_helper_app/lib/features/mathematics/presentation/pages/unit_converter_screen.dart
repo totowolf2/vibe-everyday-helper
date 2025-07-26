@@ -114,7 +114,10 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
           children: [
             // Fixed top section with category and input
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultMargin, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.defaultMargin,
+                vertical: 4,
+              ),
               child: Column(
                 children: [
                   // Category Selector
@@ -196,7 +199,10 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
                       selectedColor: theme.colorScheme.tertiaryContainer,
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                     );
                   }).toList(),
                 );
@@ -220,9 +226,9 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
               children: [
                 Text(
                   'Convert ${viewModel.getCategoryDisplayName(viewModel.selectedCategory)}',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: AppConstants.defaultMargin),
                 // Input section
@@ -235,7 +241,10 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
                         decoration: const InputDecoration(
                           labelText: 'Value',
                           border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
                           isDense: true,
                         ),
                         style: const TextStyle(fontSize: 13),
@@ -346,7 +355,12 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
       selectedItemBuilder: (BuildContext context) {
         return units.map<Widget>((Unit unit) {
           return Text(
-            unit.symbol.isNotEmpty ? unit.symbol : unit.name.substring(0, unit.name.length > 8 ? 8 : unit.name.length),
+            unit.symbol.isNotEmpty
+                ? unit.symbol
+                : unit.name.substring(
+                    0,
+                    unit.name.length > 8 ? 8 : unit.name.length,
+                  ),
             style: const TextStyle(fontSize: 12),
             overflow: TextOverflow.ellipsis,
           );
@@ -356,7 +370,9 @@ class _UnitConverterViewState extends State<_UnitConverterView> {
         return DropdownMenuItem<Unit>(
           value: unit,
           child: Text(
-            unit.symbol.isNotEmpty ? '${unit.name} (${unit.symbol})' : unit.name,
+            unit.symbol.isNotEmpty
+                ? '${unit.name} (${unit.symbol})'
+                : unit.name,
             style: const TextStyle(fontSize: 11),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,

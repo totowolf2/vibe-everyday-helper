@@ -230,7 +230,8 @@ class _PercentageCalculatorViewState extends State<_PercentageCalculatorView> {
                                   ? theme.colorScheme.primaryContainer
                                   : null,
                               selectedColor: theme.colorScheme.primaryContainer,
-                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                               visualDensity: VisualDensity.compact,
                             );
                           })

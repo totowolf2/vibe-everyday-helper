@@ -1,4 +1,3 @@
-
 enum CalculationType {
   basic,
   scientific,
@@ -139,7 +138,7 @@ class CalculationHistory {
 
   void addCalculation(Calculation calculation) {
     _calculations.insert(0, calculation);
-    
+
     if (_calculations.length > _maxHistorySize) {
       _calculations.removeLast();
     }
@@ -170,21 +169,19 @@ class CalculationHistory {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'calculations': _calculations.map((calc) => calc.toMap()).toList(),
-    };
+    return {'calculations': _calculations.map((calc) => calc.toMap()).toList()};
   }
 
   factory CalculationHistory.fromMap(Map<String, dynamic> map) {
     final history = CalculationHistory();
     final calcsList = map['calculations'] as List<dynamic>? ?? [];
-    
+
     for (final calcMap in calcsList) {
       if (calcMap is Map<String, dynamic>) {
         history.addCalculation(Calculation.fromMap(calcMap));
       }
     }
-    
+
     return history;
   }
 }

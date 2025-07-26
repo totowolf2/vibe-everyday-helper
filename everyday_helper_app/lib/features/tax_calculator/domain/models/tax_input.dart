@@ -33,28 +33,30 @@ class TaxInput {
     Decimal? lifeInsurance,
     Decimal? healthInsurance,
     this.additionalDeductions = const {},
-  })  : annualIncome = annualIncome ?? _zero,
-        spouseAllowance = spouseAllowance ?? _zero,
-        insurancePremium = insurancePremium ?? _zero,
-        retirementFund = retirementFund ?? _zero,
-        mortgageInterest = mortgageInterest ?? _zero,
-        educationDonation = educationDonation ?? _zero,
-        generalDonation = generalDonation ?? _zero,
-        socialSecurityContribution = socialSecurityContribution ?? _zero,
-        providentFund = providentFund ?? _zero,
-        lifeInsurance = lifeInsurance ?? _zero,
-        healthInsurance = healthInsurance ?? _zero;
+  }) : annualIncome = annualIncome ?? _zero,
+       spouseAllowance = spouseAllowance ?? _zero,
+       insurancePremium = insurancePremium ?? _zero,
+       retirementFund = retirementFund ?? _zero,
+       mortgageInterest = mortgageInterest ?? _zero,
+       educationDonation = educationDonation ?? _zero,
+       generalDonation = generalDonation ?? _zero,
+       socialSecurityContribution = socialSecurityContribution ?? _zero,
+       providentFund = providentFund ?? _zero,
+       lifeInsurance = lifeInsurance ?? _zero,
+       healthInsurance = healthInsurance ?? _zero;
 
   Decimal get personalAllowance => _personalAllowanceAmount;
 
-  Decimal get childAllowance => _childAllowanceAmount * Decimal.fromInt(numberOfChildren);
+  Decimal get childAllowance =>
+      _childAllowanceAmount * Decimal.fromInt(numberOfChildren);
 
   Decimal get totalAllowances {
     return personalAllowance + spouseAllowance + childAllowance;
   }
 
   Decimal get totalDeductions {
-    Decimal total = insurancePremium +
+    Decimal total =
+        insurancePremium +
         retirementFund +
         mortgageInterest +
         educationDonation +
@@ -117,7 +119,8 @@ class TaxInput {
       mortgageInterest: mortgageInterest ?? this.mortgageInterest,
       educationDonation: educationDonation ?? this.educationDonation,
       generalDonation: generalDonation ?? this.generalDonation,
-      socialSecurityContribution: socialSecurityContribution ?? this.socialSecurityContribution,
+      socialSecurityContribution:
+          socialSecurityContribution ?? this.socialSecurityContribution,
       providentFund: providentFund ?? this.providentFund,
       lifeInsurance: lifeInsurance ?? this.lifeInsurance,
       healthInsurance: healthInsurance ?? this.healthInsurance,
@@ -148,16 +151,26 @@ class TaxInput {
       annualIncome: Decimal.parse(map['annualIncome']?.toString() ?? '0'),
       spouseAllowance: Decimal.parse(map['spouseAllowance']?.toString() ?? '0'),
       numberOfChildren: map['numberOfChildren']?.toInt() ?? 0,
-      insurancePremium: Decimal.parse(map['insurancePremium']?.toString() ?? '0'),
+      insurancePremium: Decimal.parse(
+        map['insurancePremium']?.toString() ?? '0',
+      ),
       retirementFund: Decimal.parse(map['retirementFund']?.toString() ?? '0'),
-      mortgageInterest: Decimal.parse(map['mortgageInterest']?.toString() ?? '0'),
-      educationDonation: Decimal.parse(map['educationDonation']?.toString() ?? '0'),
+      mortgageInterest: Decimal.parse(
+        map['mortgageInterest']?.toString() ?? '0',
+      ),
+      educationDonation: Decimal.parse(
+        map['educationDonation']?.toString() ?? '0',
+      ),
       generalDonation: Decimal.parse(map['generalDonation']?.toString() ?? '0'),
-      socialSecurityContribution: Decimal.parse(map['socialSecurityContribution']?.toString() ?? '0'),
+      socialSecurityContribution: Decimal.parse(
+        map['socialSecurityContribution']?.toString() ?? '0',
+      ),
       providentFund: Decimal.parse(map['providentFund']?.toString() ?? '0'),
       lifeInsurance: Decimal.parse(map['lifeInsurance']?.toString() ?? '0'),
       healthInsurance: Decimal.parse(map['healthInsurance']?.toString() ?? '0'),
-      additionalDeductions: Map<String, dynamic>.from(map['additionalDeductions'] ?? {}),
+      additionalDeductions: Map<String, dynamic>.from(
+        map['additionalDeductions'] ?? {},
+      ),
     );
   }
 

@@ -39,7 +39,9 @@ class StatisticsCalculatorViewModel extends ChangeNotifier {
       _dataSet = StatisticalDataSet.fromString(_inputText);
 
       if (_dataSet!.isEmpty) {
-        _setError('No valid numbers found. Please enter numbers separated by commas.');
+        _setError(
+          'No valid numbers found. Please enter numbers separated by commas.',
+        );
         notifyListeners();
         return;
       }
@@ -57,7 +59,8 @@ class StatisticsCalculatorViewModel extends ChangeNotifier {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         type: CalculationType.statistics,
         expression: 'Statistics for: $_inputText',
-        result: 'Count: ${_dataSet!.count}, Mean: ${_dataSet!.mean.toStringAsFixed(2)}',
+        result:
+            'Count: ${_dataSet!.count}, Mean: ${_dataSet!.mean.toStringAsFixed(2)}',
         timestamp: DateTime.now(),
         metadata: {
           'count': _dataSet!.count,
@@ -68,7 +71,6 @@ class StatisticsCalculatorViewModel extends ChangeNotifier {
       );
 
       _history.addCalculation(calculation);
-
     } catch (e) {
       _setError('Error calculating statistics: ${e.toString()}');
     }
@@ -150,7 +152,8 @@ class StatisticsCalculatorViewModel extends ChangeNotifier {
       'IQR': formatValue(_dataSet!.iqr),
       'Skewness': formatValue(_dataSet!.skewness, decimals: 4),
       'Kurtosis': formatValue(_dataSet!.kurtosis, decimals: 4),
-      'Coefficient of Variation': '${formatValue(_dataSet!.coefficientOfVariation)}%',
+      'Coefficient of Variation':
+          '${formatValue(_dataSet!.coefficientOfVariation)}%',
     };
   }
 

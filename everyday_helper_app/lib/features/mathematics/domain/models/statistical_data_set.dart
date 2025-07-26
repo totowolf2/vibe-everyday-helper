@@ -10,7 +10,7 @@ class StatisticalDataSet {
     this.label,
     DateTime? timestamp,
   }) : _values = List.from(values),
-        timestamp = timestamp ?? DateTime.now();
+       timestamp = timestamp ?? DateTime.now();
 
   List<double> get values => List.unmodifiable(_values);
   int get count => _values.length;
@@ -29,10 +29,10 @@ class StatisticalDataSet {
 
   double get median {
     if (isEmpty) return 0.0;
-    
+
     final sortedValues = List<double>.from(_values)..sort();
     final middle = count ~/ 2;
-    
+
     if (count % 2 == 0) {
       return (sortedValues[middle - 1] + sortedValues[middle]) / 2;
     } else {
@@ -42,19 +42,19 @@ class StatisticalDataSet {
 
   List<double> get mode {
     if (isEmpty) return [];
-    
+
     final frequencyMap = <double, int>{};
     for (final value in _values) {
       frequencyMap[value] = (frequencyMap[value] ?? 0) + 1;
     }
-    
+
     final maxFrequency = frequencyMap.values.reduce(math.max);
-    
+
     return frequencyMap.entries
         .where((entry) => entry.value == maxFrequency)
         .map((entry) => entry.key)
         .toList()
-        ..sort();
+      ..sort();
   }
 
   double get range {
@@ -74,23 +74,23 @@ class StatisticalDataSet {
 
   double get variance {
     if (count < 2) return 0.0;
-    
+
     final meanValue = mean;
     final sumOfSquaredDifferences = _values
         .map((value) => math.pow(value - meanValue, 2))
         .reduce((a, b) => a + b);
-    
+
     return sumOfSquaredDifferences / (count - 1); // Sample variance
   }
 
   double get populationVariance {
     if (isEmpty) return 0.0;
-    
+
     final meanValue = mean;
     final sumOfSquaredDifferences = _values
         .map((value) => math.pow(value - meanValue, 2))
         .reduce((a, b) => a + b);
-    
+
     return sumOfSquaredDifferences / count; // Population variance
   }
 
@@ -114,42 +114,42 @@ class StatisticalDataSet {
 
   double get skewness {
     if (count < 3) return 0.0;
-    
+
     final meanValue = mean;
     final stdDev = standardDeviation;
-    
+
     if (stdDev == 0) return 0.0;
-    
+
     final sumOfCubedDifferences = _values
         .map((value) => math.pow((value - meanValue) / stdDev, 3))
         .reduce((a, b) => a + b);
-    
+
     return (count / ((count - 1) * (count - 2))) * sumOfCubedDifferences;
   }
 
   double get kurtosis {
     if (count < 4) return 0.0;
-    
+
     final meanValue = mean;
     final stdDev = standardDeviation;
-    
+
     if (stdDev == 0) return 0.0;
-    
+
     final sumOfFourthPowers = _values
         .map((value) => math.pow((value - meanValue) / stdDev, 4))
         .reduce((a, b) => a + b);
-    
+
     final n = count;
     return ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sumOfFourthPowers -
-           (3 * math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
+        (3 * math.pow(n - 1, 2)) / ((n - 2) * (n - 3));
   }
 
   double percentile(double p) {
     if (isEmpty || p < 0 || p > 100) return 0.0;
-    
+
     final sortedValues = List<double>.from(_values)..sort();
     final index = (p / 100) * (count - 1);
-    
+
     if (index == index.floor()) {
       return sortedValues[index.floor()];
     } else {
@@ -166,14 +166,14 @@ class StatisticalDataSet {
 
   List<double> get outliers {
     if (count < 4) return [];
-    
+
     final q1Value = q1;
     final q3Value = q3;
     final iqrValue = iqr;
-    
+
     final lowerBound = q1Value - 1.5 * iqrValue;
     final upperBound = q3Value + 1.5 * iqrValue;
-    
+
     return _values
         .where((value) => value < lowerBound || value > upperBound)
         .toList();
@@ -181,7 +181,7 @@ class StatisticalDataSet {
 
   String get summary {
     if (isEmpty) return 'No data available';
-    
+
     return '''
 Count: $count
 Mean: ${mean.toStringAsFixed(2)}
@@ -231,7 +231,7 @@ Variance: ${variance.toStringAsFixed(2)}
 
     final values = <double>[];
     final parts = cleanInput.split(RegExp(r'[,\s]+'));
-    
+
     for (final part in parts) {
       final trimmedPart = part.trim();
       if (trimmedPart.isNotEmpty) {
@@ -241,7 +241,7 @@ Variance: ${variance.toStringAsFixed(2)}
         }
       }
     }
-    
+
     return StatisticalDataSet(values: values, label: label);
   }
 
@@ -305,10 +305,7 @@ class StatisticalResult {
       'kurtosis': dataSet.kurtosis,
     };
 
-    return StatisticalResult(
-      dataSet: dataSet,
-      measures: measures,
-    );
+    return StatisticalResult(dataSet: dataSet, measures: measures);
   }
 
   String getFormattedMeasure(String key, {int decimals = 2}) {

@@ -31,7 +31,9 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
   void initState() {
     super.initState();
     _inputController.addListener(() {
-      context.read<StatisticsCalculatorViewModel>().updateInput(_inputController.text);
+      context.read<StatisticsCalculatorViewModel>().updateInput(
+        _inputController.text,
+      );
     });
   }
 
@@ -134,7 +136,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
                 child: Consumer<StatisticsCalculatorViewModel>(
                   builder: (context, viewModel, child) {
                     if (viewModel.hasError) {
-                      return _buildErrorDisplay(context, viewModel.errorMessage!);
+                      return _buildErrorDisplay(
+                        context,
+                        viewModel.errorMessage!,
+                      );
                     } else if (viewModel.hasResult) {
                       return _buildResultsDisplay(context, viewModel);
                     } else {
@@ -169,7 +174,8 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
             TextField(
               controller: _inputController,
               decoration: const InputDecoration(
-                hintText: 'Enter numbers separated by commas (e.g., 1, 2, 3, 4, 5)',
+                hintText:
+                    'Enter numbers separated by commas (e.g., 1, 2, 3, 4, 5)',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.numbers),
               ),
@@ -177,7 +183,9 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
               maxLines: 3,
               textInputAction: TextInputAction.done,
               onSubmitted: (value) {
-                context.read<StatisticsCalculatorViewModel>().calculateStatistics();
+                context
+                    .read<StatisticsCalculatorViewModel>()
+                    .calculateStatistics();
               },
             ),
             const SizedBox(height: AppConstants.defaultMargin),
@@ -186,7 +194,9 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      context.read<StatisticsCalculatorViewModel>().calculateStatistics();
+                      context
+                          .read<StatisticsCalculatorViewModel>()
+                          .calculateStatistics();
                     },
                     icon: const Icon(Icons.calculate),
                     label: const Text('Calculate Statistics'),
@@ -213,7 +223,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
     );
   }
 
-  Widget _buildResultsDisplay(BuildContext context, StatisticsCalculatorViewModel viewModel) {
+  Widget _buildResultsDisplay(
+    BuildContext context,
+    StatisticsCalculatorViewModel viewModel,
+  ) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -229,7 +242,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, StatisticsCalculatorViewModel viewModel) {
+  Widget _buildSummaryCard(
+    BuildContext context,
+    StatisticsCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
     final results = viewModel.getFormattedResults();
 
@@ -263,7 +279,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
                   child: _buildStatItem('Median', results['Median'] ?? 'N/A'),
                 ),
                 Expanded(
-                  child: _buildStatItem('Std Dev', results['Standard Deviation'] ?? 'N/A'),
+                  child: _buildStatItem(
+                    'Std Dev',
+                    results['Standard Deviation'] ?? 'N/A',
+                  ),
                 ),
               ],
             ),
@@ -296,7 +315,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
     );
   }
 
-  Widget _buildDetailedResults(BuildContext context, StatisticsCalculatorViewModel viewModel) {
+  Widget _buildDetailedResults(
+    BuildContext context,
+    StatisticsCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
     final results = viewModel.getFormattedResults();
 
@@ -307,11 +329,23 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
       },
       {
         'title': 'Variability',
-        'items': ['Range', 'Variance', 'Standard Deviation', 'Standard Error', 'Coefficient of Variation'],
+        'items': [
+          'Range',
+          'Variance',
+          'Standard Deviation',
+          'Standard Error',
+          'Coefficient of Variation',
+        ],
       },
       {
         'title': 'Position',
-        'items': ['Minimum', 'Q1 (25th percentile)', 'Q3 (75th percentile)', 'Maximum', 'IQR'],
+        'items': [
+          'Minimum',
+          'Q1 (25th percentile)',
+          'Q3 (75th percentile)',
+          'Maximum',
+          'IQR',
+        ],
       },
       {
         'title': 'Shape',
@@ -360,7 +394,10 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
     );
   }
 
-  Widget _buildOutliersCard(BuildContext context, StatisticsCalculatorViewModel viewModel) {
+  Widget _buildOutliersCard(
+    BuildContext context,
+    StatisticsCalculatorViewModel viewModel,
+  ) {
     final theme = Theme.of(context);
     final outliers = viewModel.getOutliers();
 
@@ -445,11 +482,7 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.bar_chart,
-                color: theme.primaryColor,
-                size: 64,
-              ),
+              Icon(Icons.bar_chart, color: theme.primaryColor, size: 64),
               const SizedBox(height: AppConstants.defaultPadding),
               Text(
                 'Statistics Calculator',
@@ -477,11 +510,14 @@ class _StatisticsCalculatorViewState extends State<_StatisticsCalculatorView> {
     );
   }
 
-  void _exportResults(BuildContext context, StatisticsCalculatorViewModel viewModel) {
+  void _exportResults(
+    BuildContext context,
+    StatisticsCalculatorViewModel viewModel,
+  ) {
     final results = viewModel.exportResults();
-    
+
     Clipboard.setData(ClipboardData(text: results));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Results copied to clipboard'),

@@ -65,7 +65,10 @@ void main() {
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, false);
-        expect(result.totalAllowances, Decimal.fromInt(180000)); // 60k + 60k + 60k
+        expect(
+          result.totalAllowances,
+          Decimal.fromInt(180000),
+        ); // 60k + 60k + 60k
         expect(result.taxableIncome, Decimal.fromInt(820000)); // 1M - 180k
       });
 
@@ -83,7 +86,10 @@ void main() {
         expect(result.hasError, false);
         expect(result.totalAllowances, Decimal.fromInt(180000));
         expect(result.totalDeductions, Decimal.fromInt(200000));
-        expect(result.taxableIncome, Decimal.fromInt(620000)); // 1M - 180k - 200k
+        expect(
+          result.taxableIncome,
+          Decimal.fromInt(620000),
+        ); // 1M - 180k - 200k
       });
 
       test('should calculate complex tax scenario with all deductions', () {
@@ -100,7 +106,10 @@ void main() {
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, false);
-        expect(result.totalAllowances, Decimal.fromInt(210000)); // 60k + 60k + 90k
+        expect(
+          result.totalAllowances,
+          Decimal.fromInt(210000),
+        ); // 60k + 60k + 90k
         expect(result.totalDeductions, Decimal.fromInt(709000));
         expect(result.taxableIncome, Decimal.fromInt(1081000));
         expect(result.calculatedTax.toDouble(), greaterThan(0));
@@ -118,7 +127,9 @@ void main() {
       });
 
       test('should reject excessive income', () {
-        final input = TaxInput(annualIncome: Decimal.fromInt(100000000)); // 100M THB
+        final input = TaxInput(
+          annualIncome: Decimal.fromInt(100000000),
+        ); // 100M THB
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, true);
@@ -163,29 +174,48 @@ void main() {
       test('should use correct 2024 Thai tax brackets', () {
         // Test each bracket boundary
         final testCases = [
-          {'income': 210000, 'expectedTax': 0}, // 210k - 60k = 150k (0% bracket)
-          {'income': 220000, 'expectedTax': 500}, // 220k - 60k = 160k, 10k at 5%
-          {'income': 360000, 'expectedTax': 7500}, // 360k - 60k = 300k, 150k at 5%
+          {
+            'income': 210000,
+            'expectedTax': 0,
+          }, // 210k - 60k = 150k (0% bracket)
+          {
+            'income': 220000,
+            'expectedTax': 500,
+          }, // 220k - 60k = 160k, 10k at 5%
+          {
+            'income': 360000,
+            'expectedTax': 7500,
+          }, // 360k - 60k = 300k, 150k at 5%
           {'income': 560000, 'expectedTax': 27500}, // 560k - 60k = 500k
         ];
 
         for (final testCase in testCases) {
-          final input = TaxInput(annualIncome: Decimal.fromInt(testCase['income'] as int));
+          final input = TaxInput(
+            annualIncome: Decimal.fromInt(testCase['income'] as int),
+          );
           final result = calculator.calculateTax(input);
 
           expect(result.hasError, false);
-          expect(result.calculatedTax, Decimal.fromInt(testCase['expectedTax'] as int),
-              reason: 'Failed for income ${testCase['income']}');
+          expect(
+            result.calculatedTax,
+            Decimal.fromInt(testCase['expectedTax'] as int),
+            reason: 'Failed for income ${testCase['income']}',
+          );
         }
       });
 
       test('should handle high income scenarios correctly', () {
-        final input = TaxInput(annualIncome: Decimal.fromInt(10000000)); // 10M THB
+        final input = TaxInput(
+          annualIncome: Decimal.fromInt(10000000),
+        ); // 10M THB
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, false);
         expect(result.taxableIncome, Decimal.fromInt(9940000)); // 10M - 60k
-        expect(result.calculatedTax.toDouble(), greaterThan(1000000)); // Should be substantial
+        expect(
+          result.calculatedTax.toDouble(),
+          greaterThan(1000000),
+        ); // Should be substantial
         expect(result.marginalTaxRate, Decimal.fromInt(35)); // Top bracket
       });
     });
@@ -195,7 +225,10 @@ void main() {
         final input = TaxInput(annualIncome: Decimal.fromInt(0));
         final result = calculator.calculateTax(input);
 
-        expect(result.hasError, true); // Zero income is invalid for tax calculation
+        expect(
+          result.hasError,
+          true,
+        ); // Zero income is invalid for tax calculation
         expect(result.errorMessage, contains('Invalid input data'));
       });
 
@@ -222,7 +255,10 @@ void main() {
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, false);
-        expect(result.totalAllowances, Decimal.fromInt(420000)); // 60k + 60k + 300k
+        expect(
+          result.totalAllowances,
+          Decimal.fromInt(420000),
+        ); // 60k + 60k + 300k
         expect(result.totalDeductions.toDouble(), greaterThan(700000));
       });
     });
@@ -233,10 +269,14 @@ void main() {
         final result = calculator.calculateTax(input);
 
         expect(result.hasError, false);
-        
-        final expectedEffectiveRate = 
-            (result.calculatedTax.toDouble() / result.grossIncome.toDouble()) * 100;
-        expect(result.effectiveTaxRate.toDouble(), closeTo(expectedEffectiveRate, 0.01));
+
+        final expectedEffectiveRate =
+            (result.calculatedTax.toDouble() / result.grossIncome.toDouble()) *
+            100;
+        expect(
+          result.effectiveTaxRate.toDouble(),
+          closeTo(expectedEffectiveRate, 0.01),
+        );
       });
 
       test('should calculate net income correctly', () {
@@ -253,7 +293,7 @@ void main() {
 
         expect(result.hasError, false);
         expect(result.bracketBreakdown.isNotEmpty, true);
-        
+
         // Sum of bracket taxes should equal total tax
         final bracketTaxSum = result.bracketBreakdown
             .map((b) => b.taxAmount)

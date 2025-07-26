@@ -44,9 +44,9 @@ class Deduction {
     this.requirements = const [],
     this.helpText = '',
     this.isEnabled = true,
-  })  : amount = amount ?? _zero,
-        maxLimit = maxLimit ?? _zero,
-        percentageLimit = percentageLimit ?? _zero;
+  }) : amount = amount ?? _zero,
+       maxLimit = maxLimit ?? _zero,
+       percentageLimit = percentageLimit ?? _zero;
 
   static List<Deduction> get standardThaiDeductions {
     return [
@@ -57,8 +57,12 @@ class Deduction {
         description: 'Life/health insurance premiums paid',
         maxLimit: Decimal.fromInt(100000),
         category: 'Insurance',
-        helpText: 'Maximum 100,000 THB per year for life and health insurance premiums.',
-        requirements: ['Insurance policy documents', 'Premium payment receipts'],
+        helpText:
+            'Maximum 100,000 THB per year for life and health insurance premiums.',
+        requirements: [
+          'Insurance policy documents',
+          'Premium payment receipts',
+        ],
       ),
       Deduction(
         id: 'retirement_fund',
@@ -69,7 +73,8 @@ class Deduction {
         isPercentageBased: true,
         percentageLimit: Decimal.fromInt(30),
         category: 'Retirement',
-        helpText: 'Maximum 500,000 THB or 30% of annual income, whichever is lower.',
+        helpText:
+            'Maximum 500,000 THB or 30% of annual income, whichever is lower.',
         requirements: ['RMF investment certificates', 'Bank transfer receipts'],
       ),
       Deduction(
@@ -79,8 +84,12 @@ class Deduction {
         description: 'Interest paid on home mortgage loans',
         maxLimit: Decimal.fromInt(100000),
         category: 'Housing',
-        helpText: 'Maximum 100,000 THB per year for mortgage interest on primary residence.',
-        requirements: ['Mortgage agreement', 'Interest payment receipts from bank'],
+        helpText:
+            'Maximum 100,000 THB per year for mortgage interest on primary residence.',
+        requirements: [
+          'Mortgage agreement',
+          'Interest payment receipts from bank',
+        ],
       ),
       Deduction(
         id: 'education_donation',
@@ -91,8 +100,12 @@ class Deduction {
         isPercentageBased: true,
         percentageLimit: Decimal.fromInt(10),
         category: 'Donations',
-        helpText: 'Up to 10% of net income for donations to qualified educational institutions.',
-        requirements: ['Official donation receipts', 'Institution qualification certificate'],
+        helpText:
+            'Up to 10% of net income for donations to qualified educational institutions.',
+        requirements: [
+          'Official donation receipts',
+          'Institution qualification certificate',
+        ],
       ),
       Deduction(
         id: 'general_donation',
@@ -103,8 +116,12 @@ class Deduction {
         isPercentageBased: true,
         percentageLimit: Decimal.fromInt(10),
         category: 'Donations',
-        helpText: 'Up to 10% of net income for donations to approved charitable organizations.',
-        requirements: ['Official donation receipts', 'Organization approval certificate'],
+        helpText:
+            'Up to 10% of net income for donations to approved charitable organizations.',
+        requirements: [
+          'Official donation receipts',
+          'Organization approval certificate',
+        ],
       ),
       Deduction(
         id: 'social_security',
@@ -114,7 +131,10 @@ class Deduction {
         maxLimit: Decimal.fromInt(9000),
         category: 'Social Security',
         helpText: 'Maximum 9,000 THB per year (750 THB per month).',
-        requirements: ['Payroll deduction statements', 'Social security payment receipts'],
+        requirements: [
+          'Payroll deduction statements',
+          'Social security payment receipts',
+        ],
       ),
       Deduction(
         id: 'provident_fund',
@@ -125,8 +145,12 @@ class Deduction {
         isPercentageBased: true,
         percentageLimit: Decimal.fromInt(15),
         category: 'Retirement',
-        helpText: 'Maximum 500,000 THB or 15% of annual salary, whichever is lower.',
-        requirements: ['Provident fund statements', 'Employer contribution certificates'],
+        helpText:
+            'Maximum 500,000 THB or 15% of annual salary, whichever is lower.',
+        requirements: [
+          'Provident fund statements',
+          'Employer contribution certificates',
+        ],
       ),
       Deduction(
         id: 'parent_care',
@@ -135,7 +159,8 @@ class Deduction {
         description: 'Allowance for caring for parents over 60',
         maxLimit: Decimal.fromInt(30000),
         category: 'Family',
-        helpText: 'Maximum 30,000 THB per parent (60,000 THB total for both parents).',
+        helpText:
+            'Maximum 30,000 THB per parent (60,000 THB total for both parents).',
         requirements: ['Parent age verification', 'Care expense receipts'],
       ),
     ];
@@ -161,7 +186,7 @@ class Deduction {
     if (isPercentageBased && percentageLimit > _zero) {
       final rate = percentageLimit.toDouble() / 100.0;
       final percentageAmount = income * Decimal.parse(rate.toString());
-      
+
       if (maxLimit > _zero) {
         final maxAllowed = amount < maxLimit ? amount : maxLimit;
         return maxAllowed < percentageAmount ? maxAllowed : percentageAmount;
@@ -174,10 +199,10 @@ class Deduction {
   }
 
   bool get isValid {
-    return name.isNotEmpty && 
-           amount >= _zero && 
-           maxLimit >= _zero &&
-           percentageLimit >= _zero;
+    return name.isNotEmpty &&
+        amount >= _zero &&
+        maxLimit >= _zero &&
+        percentageLimit >= _zero;
   }
 
   bool get hasLimit => maxLimit > _zero;
@@ -185,8 +210,10 @@ class Deduction {
   bool get requiresDocumentation => requirements.isNotEmpty;
 
   String get formattedAmount => _formatCurrency(amount);
-  String get formattedMaxLimit => hasLimit ? _formatCurrency(maxLimit) : 'No limit';
-  String get formattedPercentageLimit => hasPercentageLimit ? '${percentageLimit.toStringAsFixed(0)}%' : 'N/A';
+  String get formattedMaxLimit =>
+      hasLimit ? _formatCurrency(maxLimit) : 'No limit';
+  String get formattedPercentageLimit =>
+      hasPercentageLimit ? '${percentageLimit.toStringAsFixed(0)}%' : 'N/A';
 
   String get limitDescription {
     if (isPercentageBased && hasLimit) {
@@ -229,10 +256,12 @@ class Deduction {
   }
 
   String _formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   Deduction copyWith({

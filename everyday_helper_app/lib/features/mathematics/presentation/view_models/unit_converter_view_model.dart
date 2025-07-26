@@ -23,8 +23,10 @@ class UnitConverterViewModel extends ChangeNotifier {
   List<UnitConversion> get conversions => List.unmodifiable(_conversions);
   List<Calculation> get history => _history.calculations;
 
-  List<Unit> get availableUnits => UnitRegistry.getUnitsForCategory(_selectedCategory);
-  bool get canConvert => _fromUnit != null && _toUnit != null && _inputValue.isNotEmpty;
+  List<Unit> get availableUnits =>
+      UnitRegistry.getUnitsForCategory(_selectedCategory);
+  bool get canConvert =>
+      _fromUnit != null && _toUnit != null && _inputValue.isNotEmpty;
 
   // Category management
   void setCategory(UnitCategory category) {
@@ -119,7 +121,6 @@ class UnitConverterViewModel extends ChangeNotifier {
         },
       );
       _history.addCalculation(historyItem);
-
     } catch (e) {
       _setError(e.toString());
     }
@@ -141,7 +142,7 @@ class UnitConverterViewModel extends ChangeNotifier {
   void setQuickConversion(String fromUnitId, String toUnitId, String value) {
     final fromUnit = UnitRegistry.getUnitById(fromUnitId);
     final toUnit = UnitRegistry.getUnitById(toUnitId);
-    
+
     if (fromUnit != null && toUnit != null) {
       setCategory(fromUnit.category);
       _fromUnit = fromUnit;
@@ -292,7 +293,7 @@ class UnitConverterViewModel extends ChangeNotifier {
 
   String getConversionFormula() {
     if (_fromUnit == null || _toUnit == null) return '';
-    
+
     if (_fromUnit!.category == UnitCategory.temperature) {
       return 'Special temperature conversion formula';
     } else {

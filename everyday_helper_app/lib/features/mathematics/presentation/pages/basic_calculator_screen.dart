@@ -98,7 +98,10 @@ class _BasicCalculatorView extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonGrid(BuildContext context, BasicCalculatorViewModel viewModel) {
+  Widget _buildButtonGrid(
+    BuildContext context,
+    BasicCalculatorViewModel viewModel,
+  ) {
     return CalculatorButtonGrid(
       buttonRows: [
         // Row 1: Clear, Clear Entry, Backspace, Divide

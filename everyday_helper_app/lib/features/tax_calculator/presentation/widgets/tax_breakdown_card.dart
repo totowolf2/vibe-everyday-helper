@@ -61,7 +61,7 @@ class TaxBreakdownCard extends StatelessWidget {
             ),
           ),
         ),
-        
+
         if (showDetailedBreakdown) ...[
           const SizedBox(height: 16),
           // Detailed Breakdown
@@ -181,54 +181,71 @@ class TaxBreakdownCard extends StatelessWidget {
           children: [
             Text(
               'Detailed Calculation',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Income and Deductions
-            _buildCalculationStep(
-              'Step 1: Calculate Taxable Income',
-              [
-                _buildDetailRow('Gross Annual Income', result.grossIncome),
-                _buildDetailRow('Less: Total Allowances', result.totalAllowances, isNegative: true),
-                _buildDetailRow('Less: Total Deductions', result.totalDeductions, isNegative: true),
-                const Divider(),
-                _buildDetailRow('Taxable Income', result.taxableIncome, isResult: true),
-              ],
-            ),
-            
+            _buildCalculationStep('Step 1: Calculate Taxable Income', [
+              _buildDetailRow('Gross Annual Income', result.grossIncome),
+              _buildDetailRow(
+                'Less: Total Allowances',
+                result.totalAllowances,
+                isNegative: true,
+              ),
+              _buildDetailRow(
+                'Less: Total Deductions',
+                result.totalDeductions,
+                isNegative: true,
+              ),
+              const Divider(),
+              _buildDetailRow(
+                'Taxable Income',
+                result.taxableIncome,
+                isResult: true,
+              ),
+            ]),
+
             const SizedBox(height: 20),
-            
+
             // Tax Calculation by Bracket
             if (result.bracketBreakdown.isNotEmpty)
-              _buildCalculationStep(
-                'Step 2: Apply Tax Brackets',
-                [
-                  ...result.bracketBreakdown
-                      .where((bracket) => bracket.taxableAmount > Decimal.fromInt(0))
-                      .map((bracket) => _buildBracketRow(bracket)),
-                  const Divider(),
-                  _buildDetailRow('Total Tax', result.calculatedTax, isResult: true),
-                ],
-              ),
-            
-            const SizedBox(height: 20),
-            
-            // Final Result
-            _buildCalculationStep(
-              'Step 3: Final Result',
-              [
-                _buildDetailRow('Gross Income', result.grossIncome),
-                _buildDetailRow('Less: Tax Owed', result.calculatedTax, isNegative: true),
+              _buildCalculationStep('Step 2: Apply Tax Brackets', [
+                ...result.bracketBreakdown
+                    .where(
+                      (bracket) => bracket.taxableAmount > Decimal.fromInt(0),
+                    )
+                    .map((bracket) => _buildBracketRow(bracket)),
                 const Divider(),
-                _buildDetailRow('Net Income', result.netIncome, isResult: true),
-                const SizedBox(height: 8),
-                _buildDetailRow('Effective Tax Rate', Decimal.parse(_formatPercentage(result.effectiveTaxRate)), 
-                  suffix: '%', isResult: true),
-              ],
-            ),
+                _buildDetailRow(
+                  'Total Tax',
+                  result.calculatedTax,
+                  isResult: true,
+                ),
+              ]),
+
+            const SizedBox(height: 20),
+
+            // Final Result
+            _buildCalculationStep('Step 3: Final Result', [
+              _buildDetailRow('Gross Income', result.grossIncome),
+              _buildDetailRow(
+                'Less: Tax Owed',
+                result.calculatedTax,
+                isNegative: true,
+              ),
+              const Divider(),
+              _buildDetailRow('Net Income', result.netIncome, isResult: true),
+              const SizedBox(height: 8),
+              _buildDetailRow(
+                'Effective Tax Rate',
+                Decimal.parse(_formatPercentage(result.effectiveTaxRate)),
+                suffix: '%',
+                isResult: true,
+              ),
+            ]),
           ],
         ),
       ),
@@ -268,11 +285,11 @@ class TaxBreakdownCard extends StatelessWidget {
     bool isNegative = false,
     bool isResult = false,
   }) {
-    final color = isResult 
-        ? Colors.deepPurple 
-        : isNegative 
-            ? Colors.red[700] 
-            : Colors.black87;
+    final color = isResult
+        ? Colors.deepPurple
+        : isNegative
+        ? Colors.red[700]
+        : Colors.black87;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -322,10 +339,7 @@ class TaxBreakdownCard extends StatelessWidget {
           Expanded(
             child: Text(
               '${_formatCurrency(bracket.taxAmount)} THB',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               textAlign: TextAlign.right,
             ),
           ),
@@ -335,10 +349,12 @@ class TaxBreakdownCard extends StatelessWidget {
   }
 
   String _formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   String _formatPercentage(Decimal percentage) {

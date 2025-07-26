@@ -94,15 +94,9 @@ class TaxInfoCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
-            if (child != null) ...[
-              const SizedBox(height: 16),
-              child!,
-            ],
+            if (child != null) ...[const SizedBox(height: 16), child!],
           ],
         ),
       ),
@@ -179,7 +173,8 @@ class TaxResultSummaryCard extends StatelessWidget {
                   subtitle!,
                   style: TextStyle(
                     fontSize: 14,
-                    color: textColor?.withValues(alpha: 0.7) ?? Colors.grey[600],
+                    color:
+                        textColor?.withValues(alpha: 0.7) ?? Colors.grey[600],
                   ),
                 ),
               ],

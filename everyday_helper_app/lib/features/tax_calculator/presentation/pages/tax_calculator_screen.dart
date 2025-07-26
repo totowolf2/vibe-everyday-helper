@@ -69,7 +69,10 @@ class _TaxCalculatorView extends StatelessWidget {
     );
   }
 
-  Widget _buildInputTab(BuildContext context, TaxCalculatorViewModel viewModel) {
+  Widget _buildInputTab(
+    BuildContext context,
+    TaxCalculatorViewModel viewModel,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppConstants.defaultPadding),
       child: Column(
@@ -87,7 +90,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    initialValue: viewModel.currentInput.annualIncome.toString(),
+                    initialValue: viewModel.currentInput.annualIncome
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Annual Income (THB)',
                       hintText: 'Enter your annual income',
@@ -101,7 +105,9 @@ class _TaxCalculatorView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         viewModel.formErrors['annualIncome']!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                 ],
@@ -121,7 +127,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    initialValue: viewModel.currentInput.spouseAllowance.toString(),
+                    initialValue: viewModel.currentInput.spouseAllowance
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Spouse Allowance (THB)',
                       hintText: 'Enter spouse allowance (max 60,000)',
@@ -138,10 +145,12 @@ class _TaxCalculatorView extends StatelessWidget {
                       DropdownButton<int>(
                         value: viewModel.currentInput.numberOfChildren,
                         items: List.generate(21, (index) => index)
-                            .map((value) => DropdownMenuItem(
-                                  value: value,
-                                  child: Text(value.toString()),
-                                ))
+                            .map(
+                              (value) => DropdownMenuItem(
+                                value: value,
+                                child: Text(value.toString()),
+                              ),
+                            )
                             .toList(),
                         onChanged: (value) {
                           if (value != null) {
@@ -168,7 +177,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    initialValue: viewModel.currentInput.insurancePremium.toString(),
+                    initialValue: viewModel.currentInput.insurancePremium
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Insurance Premium (THB)',
                       hintText: 'Max 100,000 THB',
@@ -179,7 +189,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    initialValue: viewModel.currentInput.retirementFund.toString(),
+                    initialValue: viewModel.currentInput.retirementFund
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Retirement Fund (THB)',
                       hintText: 'Max 500,000 THB or 30% of income',
@@ -190,7 +201,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    initialValue: viewModel.currentInput.mortgageInterest.toString(),
+                    initialValue: viewModel.currentInput.mortgageInterest
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Mortgage Interest (THB)',
                       hintText: 'Max 100,000 THB per year',
@@ -201,7 +213,10 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    initialValue: viewModel.currentInput.socialSecurityContribution.toString(),
+                    initialValue: viewModel
+                        .currentInput
+                        .socialSecurityContribution
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Social Security (THB)',
                       hintText: 'Max 9,000 THB per year',
@@ -212,7 +227,8 @@ class _TaxCalculatorView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    initialValue: viewModel.currentInput.providentFund.toString(),
+                    initialValue: viewModel.currentInput.providentFund
+                        .toString(),
                     decoration: const InputDecoration(
                       labelText: 'Provident Fund (THB)',
                       hintText: 'Max 500,000 THB or 15% of salary',
@@ -229,7 +245,9 @@ class _TaxCalculatorView extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: viewModel.isCalculating ? null : viewModel.calculateTax,
+              onPressed: viewModel.isCalculating
+                  ? null
+                  : viewModel.calculateTax,
               child: viewModel.isCalculating
                   ? const SizedBox(
                       width: 20,
@@ -248,7 +266,9 @@ class _TaxCalculatorView extends StatelessWidget {
                   padding: const EdgeInsets.all(AppConstants.defaultPadding),
                   child: Text(
                     viewModel.errorMessage!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onErrorContainer,
+                    ),
                   ),
                 ),
               ),
@@ -258,7 +278,10 @@ class _TaxCalculatorView extends StatelessWidget {
     );
   }
 
-  Widget _buildResultsTab(BuildContext context, TaxCalculatorViewModel viewModel) {
+  Widget _buildResultsTab(
+    BuildContext context,
+    TaxCalculatorViewModel viewModel,
+  ) {
     if (!viewModel.hasResult) {
       return const Center(
         child: Column(
@@ -296,14 +319,48 @@ class _TaxCalculatorView extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  _buildResultRow('Gross Income', viewModel.formatCurrency(viewModel.currentResult!.grossIncome)),
-                  _buildResultRow('Total Allowances', viewModel.formatCurrency(viewModel.currentResult!.totalAllowances)),
-                  _buildResultRow('Total Deductions', viewModel.formatCurrency(viewModel.currentResult!.totalDeductions)),
+                  _buildResultRow(
+                    'Gross Income',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.grossIncome,
+                    ),
+                  ),
+                  _buildResultRow(
+                    'Total Allowances',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.totalAllowances,
+                    ),
+                  ),
+                  _buildResultRow(
+                    'Total Deductions',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.totalDeductions,
+                    ),
+                  ),
                   const Divider(),
-                  _buildResultRow('Taxable Income', viewModel.formatCurrency(viewModel.currentResult!.taxableIncome)),
-                  _buildResultRow('Tax Owed', viewModel.formatCurrency(viewModel.currentResult!.calculatedTax), isHighlight: true),
-                  _buildResultRow('Effective Tax Rate', '${viewModel.formatPercentage(viewModel.currentResult!.effectiveTaxRate)}%'),
-                  _buildResultRow('Net Income', viewModel.formatCurrency(viewModel.currentResult!.netIncome)),
+                  _buildResultRow(
+                    'Taxable Income',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.taxableIncome,
+                    ),
+                  ),
+                  _buildResultRow(
+                    'Tax Owed',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.calculatedTax,
+                    ),
+                    isHighlight: true,
+                  ),
+                  _buildResultRow(
+                    'Effective Tax Rate',
+                    '${viewModel.formatPercentage(viewModel.currentResult!.effectiveTaxRate)}%',
+                  ),
+                  _buildResultRow(
+                    'Net Income',
+                    viewModel.formatCurrency(
+                      viewModel.currentResult!.netIncome,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -318,7 +375,10 @@ class _TaxCalculatorView extends StatelessWidget {
                   children: [
                     const Text(
                       'Tax Breakdown by Bracket',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ...viewModel.currentResult!.bracketBreakdown.map((bracket) {
@@ -328,11 +388,15 @@ class _TaxCalculatorView extends StatelessWidget {
                           child: Row(
                             children: [
                               Expanded(
-                                child: Text('${bracket.bracketDescription} at ${bracket.taxRateDisplay}'),
+                                child: Text(
+                                  '${bracket.bracketDescription} at ${bracket.taxRateDisplay}',
+                                ),
                               ),
                               Text(
                                 '${viewModel.formatCurrency(bracket.taxAmount)} THB',
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
@@ -357,7 +421,10 @@ class _TaxCalculatorView extends StatelessWidget {
                       children: [
                         const Text(
                           'Calculation History',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextButton(
                           onPressed: viewModel.clearHistory,
@@ -370,12 +437,16 @@ class _TaxCalculatorView extends StatelessWidget {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: ListTile(
-                          title: Text('Tax: ${viewModel.formatCurrency(result.calculatedTax)} THB'),
+                          title: Text(
+                            'Tax: ${viewModel.formatCurrency(result.calculatedTax)} THB',
+                          ),
                           subtitle: Text(
                             'Income: ${viewModel.formatCurrency(result.grossIncome)} THB • '
                             '${result.calculationDate.day}/${result.calculationDate.month}/${result.calculationDate.year}',
                           ),
-                          trailing: Text('${viewModel.formatPercentage(result.effectiveTaxRate)}%'),
+                          trailing: Text(
+                            '${viewModel.formatPercentage(result.effectiveTaxRate)}%',
+                          ),
                           onTap: () => viewModel.useHistoryResult(result),
                         ),
                       );
@@ -396,7 +467,11 @@ class _TaxCalculatorView extends StatelessWidget {
     );
   }
 
-  Widget _buildResultRow(String label, String value, {bool isHighlight = false}) {
+  Widget _buildResultRow(
+    String label,
+    String value, {
+    bool isHighlight = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -448,9 +523,13 @@ class _TaxCalculatorView extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
-                  Text('• Progressive tax calculation using official Thai tax brackets'),
+                  Text(
+                    '• Progressive tax calculation using official Thai tax brackets',
+                  ),
                   Text('• Personal, spouse, and child allowances'),
-                  Text('• Common deductions (insurance, retirement fund, etc.)'),
+                  Text(
+                    '• Common deductions (insurance, retirement fund, etc.)',
+                  ),
                   Text('• Detailed breakdown by tax bracket'),
                   Text('• Calculation history'),
                 ],

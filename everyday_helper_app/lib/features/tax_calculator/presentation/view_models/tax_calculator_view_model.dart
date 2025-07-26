@@ -10,9 +10,9 @@ import '../../domain/use_cases/thai_tax_calculator.dart';
 
 class TaxCalculatorViewModel extends ChangeNotifier {
   static final Decimal _zero = Decimal.fromInt(0);
-  
+
   final ThaiTaxCalculator _taxCalculator = ThaiTaxCalculator();
-  
+
   // Current input state
   TaxInput _currentInput = TaxInput();
   TaxResult? _currentResult;
@@ -24,7 +24,7 @@ class TaxCalculatorViewModel extends ChangeNotifier {
 
   // Tab state
   int _currentTabIndex = 0;
-  
+
   // Form state
   final Map<String, String> _formErrors = {};
   bool _isDirty = false;
@@ -32,8 +32,10 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   // Getters
   TaxInput get currentInput => _currentInput;
   TaxResult? get currentResult => _currentResult;
-  List<TaxResult> get calculationHistory => List.unmodifiable(_calculationHistory);
-  List<Deduction> get availableDeductions => List.unmodifiable(_availableDeductions);
+  List<TaxResult> get calculationHistory =>
+      List.unmodifiable(_calculationHistory);
+  List<Deduction> get availableDeductions =>
+      List.unmodifiable(_availableDeductions);
   String? get errorMessage => _errorMessage;
   bool get isCalculating => _isCalculating;
   bool get isLoading => _isLoading;
@@ -47,7 +49,8 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   Decimal get estimatedTax => _currentResult?.calculatedTax ?? _zero;
   Decimal get effectiveTaxRate => _currentResult?.effectiveTaxRate ?? _zero;
   Decimal get marginalTaxRate => _currentResult?.marginalTaxRate ?? _zero;
-  String get taxSummary => _currentResult?.summaryText ?? 'No calculation performed';
+  String get taxSummary =>
+      _currentResult?.summaryText ?? 'No calculation performed';
 
   TaxCalculatorViewModel() {
     _initialize();
@@ -153,10 +156,15 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   void updateSocialSecurityContribution(String value) {
     try {
       final contribution = value.isEmpty ? _zero : Decimal.parse(value);
-      _updateInput(_currentInput.copyWith(socialSecurityContribution: contribution));
+      _updateInput(
+        _currentInput.copyWith(socialSecurityContribution: contribution),
+      );
       _clearFieldError('socialSecurityContribution');
     } catch (e) {
-      _setFieldError('socialSecurityContribution', 'Invalid contribution amount');
+      _setFieldError(
+        'socialSecurityContribution',
+        'Invalid contribution amount',
+      );
     }
   }
 
@@ -193,7 +201,7 @@ class TaxCalculatorViewModel extends ChangeNotifier {
 
       // Perform calculation
       final result = _taxCalculator.calculateTax(_currentInput);
-      
+
       if (result.hasError) {
         _setError(result.errorMessage!);
       } else {
@@ -203,7 +211,6 @@ class TaxCalculatorViewModel extends ChangeNotifier {
         await _saveCalculationHistory();
         _isDirty = false;
       }
-
     } catch (e) {
       _setError('Calculation failed: ${e.toString()}');
     } finally {
@@ -230,12 +237,19 @@ class TaxCalculatorViewModel extends ChangeNotifier {
     }
 
     if (_currentInput.spouseAllowance > Decimal.fromInt(60000)) {
-      _setFieldError('spouseAllowance', 'Spouse allowance cannot exceed 60,000 THB');
+      _setFieldError(
+        'spouseAllowance',
+        'Spouse allowance cannot exceed 60,000 THB',
+      );
       isValid = false;
     }
 
-    if (_currentInput.numberOfChildren < 0 || _currentInput.numberOfChildren > 20) {
-      _setFieldError('numberOfChildren', 'Number of children must be between 0 and 20');
+    if (_currentInput.numberOfChildren < 0 ||
+        _currentInput.numberOfChildren > 20) {
+      _setFieldError(
+        'numberOfChildren',
+        'Number of children must be between 0 and 20',
+      );
       isValid = false;
     }
 
@@ -261,7 +275,7 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   // History management
   void _addToHistory(TaxResult result) {
     _calculationHistory.insert(0, result);
-    
+
     // Keep only last 50 calculations
     if (_calculationHistory.length > 50) {
       _calculationHistory = _calculationHistory.take(50).toList();
@@ -273,12 +287,15 @@ class TaxCalculatorViewModel extends ChangeNotifier {
 
     _currentInput = TaxInput(
       annualIncome: result.grossIncome,
-      spouseAllowance: result.totalAllowances - Decimal.fromInt(60000) - 
-          (Decimal.fromInt(30000) * Decimal.fromInt(_currentInput.numberOfChildren)),
+      spouseAllowance:
+          result.totalAllowances -
+          Decimal.fromInt(60000) -
+          (Decimal.fromInt(30000) *
+              Decimal.fromInt(_currentInput.numberOfChildren)),
       // Note: We can't perfectly reconstruct all individual deductions from the result
       // This is a limitation of the history feature
     );
-    
+
     _currentResult = result;
     _isDirty = true;
     _clearError();
@@ -320,7 +337,10 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   Future<void> _saveLastInput() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('tax_calculator_last_input', jsonEncode(_currentInput.toMap()));
+      await prefs.setString(
+        'tax_calculator_last_input',
+        jsonEncode(_currentInput.toMap()),
+      );
     } catch (e) {
       debugPrint('Failed to save last input: $e');
     }
@@ -330,7 +350,7 @@ class TaxCalculatorViewModel extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final inputJson = prefs.getString('tax_calculator_last_input');
-      
+
       if (inputJson != null) {
         final inputMap = jsonDecode(inputJson) as Map<String, dynamic>;
         _currentInput = TaxInput.fromMap(inputMap);
@@ -343,7 +363,9 @@ class TaxCalculatorViewModel extends ChangeNotifier {
   Future<void> _saveCalculationHistory() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final historyJson = _calculationHistory.map((result) => result.toMap()).toList();
+      final historyJson = _calculationHistory
+          .map((result) => result.toMap())
+          .toList();
       await prefs.setString('tax_calculator_history', jsonEncode(historyJson));
     } catch (e) {
       debugPrint('Failed to save calculation history: $e');
@@ -354,7 +376,7 @@ class TaxCalculatorViewModel extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final historyJson = prefs.getString('tax_calculator_history');
-      
+
       if (historyJson != null) {
         final historyList = jsonDecode(historyJson) as List<dynamic>;
         _calculationHistory = historyList
@@ -368,10 +390,12 @@ class TaxCalculatorViewModel extends ChangeNotifier {
 
   // Utility methods
   String formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(2).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(2)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   String formatPercentage(Decimal percentage) {

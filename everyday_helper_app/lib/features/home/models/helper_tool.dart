@@ -44,6 +44,14 @@ class HelperTool {
         route: AppConstants.taxCalculatorRoute,
         category: 'Calculations',
       ),
+      const HelperTool(
+        title: 'Subnet Calculator',
+        description:
+            'Calculate subnet information and validate IP addresses within networks',
+        icon: Icons.network_check,
+        route: AppConstants.subnetCalculatorRoute,
+        category: 'Calculations',
+      ),
       // Future tools will be added here
     ];
   }

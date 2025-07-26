@@ -89,11 +89,7 @@ class HistoryItem extends StatelessWidget {
   final TaxResult result;
   final VoidCallback onTap;
 
-  const HistoryItem({
-    super.key,
-    required this.result,
-    required this.onTap,
-  });
+  const HistoryItem({super.key, required this.result, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -156,10 +152,12 @@ class HistoryItem extends StatelessWidget {
   }
 
   String _formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   String _formatPercentage(Decimal percentage) {
@@ -174,10 +172,7 @@ class HistoryItem extends StatelessWidget {
 class HistoryDetailDialog extends StatelessWidget {
   final TaxResult result;
 
-  const HistoryDetailDialog({
-    super.key,
-    required this.result,
-  });
+  const HistoryDetailDialog({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -188,17 +183,43 @@ class HistoryDetailDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildDetailRow('Calculation Date', _formatDate(result.calculationDate)),
+            _buildDetailRow(
+              'Calculation Date',
+              _formatDate(result.calculationDate),
+            ),
             const SizedBox(height: 16),
-            _buildDetailRow('Gross Income', '${_formatCurrency(result.grossIncome)} THB'),
-            _buildDetailRow('Total Allowances', '${_formatCurrency(result.totalAllowances)} THB'),
-            _buildDetailRow('Total Deductions', '${_formatCurrency(result.totalDeductions)} THB'),
+            _buildDetailRow(
+              'Gross Income',
+              '${_formatCurrency(result.grossIncome)} THB',
+            ),
+            _buildDetailRow(
+              'Total Allowances',
+              '${_formatCurrency(result.totalAllowances)} THB',
+            ),
+            _buildDetailRow(
+              'Total Deductions',
+              '${_formatCurrency(result.totalDeductions)} THB',
+            ),
             const Divider(),
-            _buildDetailRow('Taxable Income', '${_formatCurrency(result.taxableIncome)} THB', isHighlight: true),
-            _buildDetailRow('Tax Owed', '${_formatCurrency(result.calculatedTax)} THB', isHighlight: true),
+            _buildDetailRow(
+              'Taxable Income',
+              '${_formatCurrency(result.taxableIncome)} THB',
+              isHighlight: true,
+            ),
+            _buildDetailRow(
+              'Tax Owed',
+              '${_formatCurrency(result.calculatedTax)} THB',
+              isHighlight: true,
+            ),
             const SizedBox(height: 16),
-            _buildDetailRow('Effective Tax Rate', '${_formatPercentage(result.effectiveTaxRate)}%'),
-            _buildDetailRow('Net Income', '${_formatCurrency(result.netIncome)} THB'),
+            _buildDetailRow(
+              'Effective Tax Rate',
+              '${_formatPercentage(result.effectiveTaxRate)}%',
+            ),
+            _buildDetailRow(
+              'Net Income',
+              '${_formatCurrency(result.netIncome)} THB',
+            ),
             if (result.bracketBreakdown.isNotEmpty) ...[
               const SizedBox(height: 16),
               const Text(
@@ -231,7 +252,11 @@ class HistoryDetailDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isHighlight = false}) {
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    bool isHighlight = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -255,10 +280,12 @@ class HistoryDetailDialog extends StatelessWidget {
   }
 
   String _formatCurrency(Decimal amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 
   String _formatPercentage(Decimal percentage) {

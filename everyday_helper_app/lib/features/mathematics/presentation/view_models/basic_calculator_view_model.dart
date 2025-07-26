@@ -87,7 +87,9 @@ class BasicCalculatorViewModel extends ChangeNotifier {
     final openCount = _expression.split('(').length - 1;
     final closeCount = _expression.split(')').length - 1;
 
-    if (_expression.isEmpty || _isLastCharOperator() || _expression.endsWith('(')) {
+    if (_expression.isEmpty ||
+        _isLastCharOperator() ||
+        _expression.endsWith('(')) {
       _expression += '(';
     } else if (openCount > closeCount) {
       _expression += ')';
@@ -108,7 +110,9 @@ class BasicCalculatorViewModel extends ChangeNotifier {
 
     try {
       final sanitizedExpression = OperationValidator.sanitizeInput(_expression);
-      final validationError = OperationValidator.validateExpression(sanitizedExpression);
+      final validationError = OperationValidator.validateExpression(
+        sanitizedExpression,
+      );
 
       if (validationError != null) {
         _setError(validationError);
@@ -141,7 +145,6 @@ class BasicCalculatorViewModel extends ChangeNotifier {
 
       _history.addCalculation(calculation);
       _isLastInputEquals = true;
-
     } catch (e) {
       _setError('Invalid expression');
     }

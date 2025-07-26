@@ -22,15 +22,17 @@ class MathematicsScreen extends StatelessWidget {
           children: [
             Text(
               'Mathematics Tools',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppConstants.defaultMargin),
             Text(
               'Choose from the available mathematics calculators and tools below.',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: AppConstants.defaultPadding * 2),
@@ -69,10 +71,7 @@ class MathematicsScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.info_outline,
-                  color: Theme.of(context).primaryColor,
-                ),
+                Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
                 const SizedBox(width: AppConstants.defaultMargin),
                 Text(
                   'Mathematics Features',
@@ -97,7 +96,10 @@ class MathematicsScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToCalculator(BuildContext context, MathematicsCategory category) {
+  void _navigateToCalculator(
+    BuildContext context,
+    MathematicsCategory category,
+  ) {
     switch (category.toolType) {
       case MathematicsToolType.basicCalculator:
         Navigator.of(context).pushNamed(category.route);
@@ -116,5 +118,4 @@ class MathematicsScreen extends StatelessWidget {
         break;
     }
   }
-
 }

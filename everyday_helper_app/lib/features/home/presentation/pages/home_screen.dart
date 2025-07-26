@@ -106,6 +106,9 @@ class HomeScreen extends StatelessWidget {
       case AppConstants.taxCalculatorRoute:
         AppRoutes.navigateToTaxCalculator(context);
         break;
+      case AppConstants.subnetCalculatorRoute:
+        Navigator.of(context).pushNamed(AppConstants.subnetCalculatorRoute);
+        break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
