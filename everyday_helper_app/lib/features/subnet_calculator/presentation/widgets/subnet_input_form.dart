@@ -12,7 +12,51 @@ class IpAddressInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     // Allow only numbers, dots, and slashes for IP addresses with optional CIDR
-    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9./]'), '');
+    String filteredString = newValue.text.replaceAll(RegExp(r'[^0-9./]'), '');
+
+    // Auto-insert dots after every 3 digits for IP address formatting
+    if (filteredString.length > oldValue.text.length) {
+      // Only format if we're adding characters (not deleting)
+      final parts = filteredString.split('.');
+      if (parts.isNotEmpty) {
+        String formattedText = '';
+        for (int i = 0; i < parts.length; i++) {
+          String part = parts[i];
+
+          // Limit each IP part to maximum 3 digits
+          if (part.contains('/')) {
+            // Handle CIDR notation
+            final cidrParts = part.split('/');
+            if (cidrParts[0].length > 3) {
+              cidrParts[0] = cidrParts[0].substring(0, 3);
+            }
+            formattedText += cidrParts.join('/');
+          } else if (part.length > 3) {
+            // Limit to 3 digits max per IP part
+            if (i < 3) {
+              // Move extra digits to next part only if not at last part
+              final remainingDigits = part.substring(3);
+              formattedText +=
+                  '${part.substring(0, 3)}.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+            } else {
+              // Last part: just truncate to 3 digits
+              formattedText += part.substring(0, 3);
+            }
+          } else if (part.length == 3 &&
+              i < 3 &&
+              !oldValue.text.endsWith('.')) {
+            // Auto-add dot after 3 digits
+            formattedText += '$part.';
+          } else {
+            formattedText += part;
+            if (i < parts.length - 1) {
+              formattedText += '.';
+            }
+          }
+        }
+        filteredString = formattedText;
+      }
+    }
 
     return TextEditingValue(
       text: filteredString,
@@ -28,7 +72,67 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     // Allow only numbers and dots for subnet masks and CIDR numbers
-    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9.]'), '');
+    String filteredString = newValue.text.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    // Auto-insert dots after every 3 digits for subnet mask formatting
+    if (filteredString.length > oldValue.text.length) {
+      // Only format if we're adding characters (not deleting)
+      if (filteredString.contains('.')) {
+        // Already has dots - treat as subnet mask
+        final parts = filteredString.split('.');
+        if (parts.isNotEmpty) {
+          String formattedText = '';
+          for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+
+            // Limit each subnet mask part to maximum 3 digits
+            if (part.length > 3) {
+              if (i < 3) {
+                // Move extra digits to next part
+                final remainingDigits = part.substring(3);
+                formattedText +=
+                    '${part.substring(0, 3)}.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+              } else {
+                // Last part: truncate to 3 digits
+                formattedText += part.substring(0, 3);
+              }
+            } else if (part.length == 3 &&
+                i < 3 &&
+                !oldValue.text.endsWith('.')) {
+              // Auto-add dot after 3 digits
+              formattedText += '$part.';
+            } else {
+              formattedText += part;
+              if (i < parts.length - 1) {
+                formattedText += '.';
+              }
+            }
+          }
+          filteredString = formattedText;
+        }
+      } else {
+        // No dots yet - could be subnet mask being typed or CIDR
+        // If length > 2 and user is typing numbers that look like subnet mask, add dots
+        if (filteredString.length == 3 && !oldValue.text.endsWith('.')) {
+          // Auto-add dot after 3 digits (subnet mask format)
+          filteredString = '$filteredString.';
+        } else if (filteredString.length > 3) {
+          // More than 3 digits without dots - format as subnet mask
+          String formattedText = '';
+          for (int i = 0; i < filteredString.length; i += 3) {
+            if (i > 0) formattedText += '.';
+            final endIndex = (i + 3 < filteredString.length)
+                ? i + 3
+                : filteredString.length;
+            formattedText += filteredString.substring(i, endIndex);
+          }
+          filteredString = formattedText;
+        } else if (filteredString.length <= 2) {
+          // 1-2 digits could be CIDR - don't format yet, let user decide
+          // No change needed
+        }
+      }
+    }
 
     return TextEditingValue(
       text: filteredString,
@@ -143,7 +247,10 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                         'ใส่ IP Address พร้อม CIDR (ทางเลือก)', // 'Enter IP Address with CIDR (optional)' in Thai
                     helperMaxLines: 2,
                   ),
-                  keyboardType: TextInputType.text,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: false,
+                    decimal: true,
+                  ),
                   onChanged: (value) {
                     _handleIpAddressInput(value, viewModel);
                   },
@@ -170,7 +277,10 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                         'ใส่ Subnet Mask (255.255.255.0) หรือ CIDR (24)', // 'Enter Subnet Mask or CIDR' in Thai
                     helperMaxLines: 2,
                   ),
-                  keyboardType: TextInputType.text,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: false,
+                    decimal: true,
+                  ),
                   onChanged: (value) {
                     viewModel.updateMaskOrCidr(value);
                   },
