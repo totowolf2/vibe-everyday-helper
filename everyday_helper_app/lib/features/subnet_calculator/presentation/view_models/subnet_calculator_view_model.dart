@@ -29,8 +29,10 @@ class SubnetCalculatorViewModel extends ChangeNotifier {
   String _testIpAddress = '';
   String _networkAddress = '';
   String _networkMaskOrCidr = '';
+  String _multipleIpsText = ''; // Store multiple IPs text for FAB access
   List<SubnetValidationResult> _validationResults = [];
   String? _validationError;
+  int _validationTabIndex = 0; // 0 = single IP, 1 = multiple IPs
 
   // History
   final SubnetCalculationHistory _history = SubnetCalculationHistory();
@@ -54,12 +56,14 @@ class SubnetCalculatorViewModel extends ChangeNotifier {
   String get testIpAddress => _testIpAddress;
   String get networkAddress => _networkAddress;
   String get networkMaskOrCidr => _networkMaskOrCidr;
+  String get multipleIpsText => _multipleIpsText;
   List<SubnetValidationResult> get validationResults =>
       List.unmodifiable(_validationResults);
   String? get validationError => _validationError;
   bool get hasValidationError =>
       _validationError != null && _validationError!.isNotEmpty;
   bool get hasValidationResults => _validationResults.isNotEmpty;
+  int get validationTabIndex => _validationTabIndex;
 
   // History getters
   List<SubnetCalculationEntry> get historyEntries => _history.entries;
@@ -181,10 +185,25 @@ class SubnetCalculatorViewModel extends ChangeNotifier {
     }
   }
 
+  void updateValidationTabIndex(int index) {
+    if (_validationTabIndex != index) {
+      _validationTabIndex = index;
+      notifyListeners();
+    }
+  }
+
+  void updateMultipleIpsText(String value) {
+    if (_multipleIpsText != value) {
+      _multipleIpsText = value;
+      // Don't notify listeners for this as it's just for internal storage
+    }
+  }
+
   void clearValidationInputs() {
     _testIpAddress = '';
     _networkAddress = '';
     _networkMaskOrCidr = '';
+    _multipleIpsText = '';
     _validationResults.clear();
     _clearValidationError();
     notifyListeners();
@@ -226,6 +245,19 @@ class SubnetCalculatorViewModel extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  Future<void> validateMultipleIPsFromFAB() async {
+    // This method will be called from FAB when in multiple IPs tab
+    if (_multipleIpsText.isEmpty) {
+      _setValidationError(
+        'กรุณาใส่ IP Address ที่ต้องการตรวจสอบในช่อง Multiple IPs',
+      );
+      return;
+    }
+
+    // Call the existing validateMultipleIPs method with the stored text
+    await validateMultipleIPs(_multipleIpsText);
   }
 
   Future<void> validateMultipleIPs(String multipleIpsText) async {

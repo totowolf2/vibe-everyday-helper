@@ -141,7 +141,14 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                       onPressed: viewModel.isLoading
                           ? null
                           : () {
-                              viewModel.validateSingleIP();
+                              // Check which validation tab is active
+                              if (viewModel.validationTabIndex == 0) {
+                                // Single IP tab
+                                viewModel.validateSingleIP();
+                              } else {
+                                // Multiple IPs tab - trigger multiple IP validation
+                                viewModel.validateMultipleIPsFromFAB();
+                              }
                             },
                       icon: viewModel.isLoading
                           ? const SizedBox(
@@ -152,11 +159,17 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.verified_user),
+                          : Icon(
+                              viewModel.validationTabIndex == 0
+                                  ? Icons.verified_user
+                                  : Icons.playlist_add_check,
+                            ),
                       label: Text(
                         viewModel.isLoading
                             ? 'กำลังตรวจสอบ...'
-                            : 'ตรวจสอบ IP', // 'Validating...' : 'Validate IP' in Thai
+                            : viewModel.validationTabIndex == 0
+                            ? 'ตรวจสอบ IP' // 'Validate IP' in Thai
+                            : 'ตรวจสอบหลาย IP', // 'Validate Multiple IPs' in Thai
                       ),
                     );
 

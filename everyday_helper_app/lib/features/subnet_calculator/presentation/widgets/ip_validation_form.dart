@@ -179,6 +179,14 @@ class _IpValidationFormState extends State<IpValidationForm>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    // Listen to tab changes and update ViewModel
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        final viewModel = context.read<SubnetCalculatorViewModel>();
+        viewModel.updateValidationTabIndex(_tabController.index);
+      }
+    });
   }
 
   void _initializeControllers(SubnetCalculatorViewModel viewModel) {
@@ -502,6 +510,11 @@ class _IpValidationFormState extends State<IpValidationForm>
               decimal: true,
             ),
             maxLines: 4,
+            onChanged: (value) {
+              // Update ViewModel with multiple IPs text for FAB access
+              final viewModel = context.read<SubnetCalculatorViewModel>();
+              viewModel.updateMultipleIpsText(value);
+            },
           ),
         ),
         const SizedBox(height: 16),
