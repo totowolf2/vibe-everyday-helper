@@ -26,17 +26,39 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
 
     // Listen to tab controller changes (including swipes)
     _tabController.addListener(_onTabChange);
+    _tabController.animation?.addListener(_onTabAnimationChange);
   }
 
   void _onTabChange() {
-    if (_viewModel != null && _tabController.indexIsChanging) {
-      final newTab = SubnetCalculatorTab.values[_tabController.index];
-      _viewModel!.switchTab(newTab);
+    if (_viewModel != null) {
+      // Support both tap and swipe changes
+      if (_tabController.indexIsChanging || 
+          _viewModel!.currentTab.index != _tabController.index) {
+        final newTab = SubnetCalculatorTab.values[_tabController.index];
+        _viewModel!.switchTab(newTab);
+      }
+    }
+  }
+
+  void _onTabAnimationChange() {
+    if (_viewModel != null && _tabController.animation != null) {
+      // Handle swipe gestures during animation
+      final animationValue = _tabController.animation!.value;
+      final targetIndex = animationValue.round();
+      
+      // Update ViewModel when user swipes past the midpoint
+      if (targetIndex != _viewModel!.currentTab.index && 
+          targetIndex >= 0 && targetIndex < 2) {
+        final newTab = SubnetCalculatorTab.values[targetIndex];
+        _viewModel!.switchTab(newTab);
+      }
     }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChange);
+    _tabController.animation?.removeListener(_onTabAnimationChange);
     _tabController.dispose();
     super.dispose();
   }
@@ -52,10 +74,10 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
           // Store reference to ViewModel for tab change listener
           _viewModel = viewModel;
 
-          // Update TabController when ViewModel tab changes
+          // Update TabController when ViewModel tab changes (but not during user swipe)
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final targetIndex = viewModel.currentTab.index;
-            if (_tabController.index != targetIndex) {
+            if (_tabController.index != targetIndex && !_tabController.indexIsChanging) {
               _tabController.animateTo(targetIndex);
             }
           });
