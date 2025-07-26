@@ -15,7 +15,8 @@ class _IpValidationFormState extends State<IpValidationForm>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _multipleIpsController = TextEditingController();
-  final TextEditingController _networkAddressController = TextEditingController();
+  final TextEditingController _networkAddressController =
+      TextEditingController();
   final TextEditingController _networkMaskController = TextEditingController();
   final TextEditingController _testIpController = TextEditingController();
 
@@ -54,7 +55,7 @@ class _IpValidationFormState extends State<IpValidationForm>
       builder: (context, viewModel, child) {
         // Initialize controllers with ViewModel values
         _initializeControllers(viewModel);
-        
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -246,7 +247,7 @@ class _IpValidationFormState extends State<IpValidationForm>
               ),
             ),
             const SizedBox(width: 12),
-            OutlinedButton.icon(
+            IconButton(
               onPressed: viewModel.isLoading
                   ? null
                   : () {
@@ -255,10 +256,13 @@ class _IpValidationFormState extends State<IpValidationForm>
                       _testIpController.clear();
                       viewModel.clearValidationInputs();
                     },
-              icon: const Icon(Icons.clear),
-              label: const Text('ล้าง'), // 'Clear' in Thai
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              icon: const Icon(Icons.clear_all),
+              tooltip: 'ล้างข้อมูลทั้งหมด', // 'Clear all data' in Thai
+              iconSize: 28,
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.grey[100],
+                foregroundColor: Colors.grey[700],
+                padding: const EdgeInsets.all(12),
               ),
             ),
           ],
@@ -320,7 +324,7 @@ class _IpValidationFormState extends State<IpValidationForm>
               ),
             ),
             const SizedBox(width: 12),
-            OutlinedButton.icon(
+            IconButton(
               onPressed: viewModel.isLoading
                   ? null
                   : () {
@@ -329,10 +333,13 @@ class _IpValidationFormState extends State<IpValidationForm>
                       _multipleIpsController.clear();
                       viewModel.clearValidationInputs();
                     },
-              icon: const Icon(Icons.clear),
-              label: const Text('ล้าง'), // 'Clear' in Thai
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              icon: const Icon(Icons.clear_all),
+              tooltip: 'ล้างข้อมูลทั้งหมด', // 'Clear all data' in Thai
+              iconSize: 28,
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.grey[100],
+                foregroundColor: Colors.grey[700],
+                padding: const EdgeInsets.all(12),
               ),
             ),
           ],

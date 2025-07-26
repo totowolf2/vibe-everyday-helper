@@ -166,7 +166,7 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    OutlinedButton.icon(
+                    IconButton(
                       onPressed: viewModel.isLoading
                           ? null
                           : () {
@@ -174,10 +174,13 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                               _maskOrCidrController.clear();
                               viewModel.clearCalculationInputs();
                             },
-                      icon: const Icon(Icons.clear),
-                      label: const Text('ล้าง'), // 'Clear' in Thai
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      icon: const Icon(Icons.clear_all),
+                      tooltip: 'ล้างข้อมูลทั้งหมด', // 'Clear all data' in Thai
+                      iconSize: 28,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.grey[100],
+                        foregroundColor: Colors.grey[700],
+                        padding: const EdgeInsets.all(12),
                       ),
                     ),
                   ],
