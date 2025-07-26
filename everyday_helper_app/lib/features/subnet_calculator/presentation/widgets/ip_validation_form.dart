@@ -1,8 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../../domain/models/subnet_validation_result.dart';
 import '../view_models/subnet_calculator_view_model.dart';
+
+// Input formatters for different field types
+class IpAddressInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow only numbers, dots, and slashes for IP addresses with optional CIDR
+    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9./]'), '');
+
+    return TextEditingValue(
+      text: filteredString,
+      selection: TextSelection.collapsed(offset: filteredString.length),
+    );
+  }
+}
+
+class SubnetMaskInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow only numbers and dots for subnet masks and CIDR numbers
+    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    return TextEditingValue(
+      text: filteredString,
+      selection: TextSelection.collapsed(offset: filteredString.length),
+    );
+  }
+}
+
+class MultipleIpsInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow numbers, dots, commas, spaces, and newlines for multiple IPs
+    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9., \n]'), '');
+
+    return TextEditingValue(
+      text: filteredString,
+      selection: TextSelection.collapsed(offset: filteredString.length),
+    );
+  }
+}
 
 class IpValidationForm extends StatefulWidget {
   const IpValidationForm({super.key});
@@ -190,6 +240,10 @@ class _IpValidationFormState extends State<IpValidationForm>
         // Network Address input
         TextFormField(
           controller: _networkAddressController,
+          inputFormatters: [
+            IpAddressInputFormatter(),
+            LengthLimitingTextInputFormatter(18), // Max length for IP with CIDR
+          ],
           decoration: InputDecoration(
             labelText: 'Network Address',
             hintText:
@@ -210,6 +264,10 @@ class _IpValidationFormState extends State<IpValidationForm>
         TextFormField(
           controller: _networkMaskController,
           focusNode: _networkMaskFocusNode,
+          inputFormatters: [
+            SubnetMaskInputFormatter(),
+            LengthLimitingTextInputFormatter(15), // Max length for subnet mask
+          ],
           decoration: InputDecoration(
             labelText: 'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai
             hintText: '255.255.255.0 หรือ 24', // 'or 24' in Thai
@@ -233,6 +291,10 @@ class _IpValidationFormState extends State<IpValidationForm>
         // Single IP input
         TextFormField(
           controller: _testIpController,
+          inputFormatters: [
+            IpAddressInputFormatter(),
+            LengthLimitingTextInputFormatter(15), // Max length for single IP
+          ],
           decoration: InputDecoration(
             labelText:
                 'IP Address ที่ต้องการตรวจสอบ', // 'IP Address to validate' in Thai
@@ -306,6 +368,12 @@ class _IpValidationFormState extends State<IpValidationForm>
         Expanded(
           child: TextFormField(
             controller: _multipleIpsController,
+            inputFormatters: [
+              MultipleIpsInputFormatter(),
+              LengthLimitingTextInputFormatter(
+                500,
+              ), // Max length for multiple IPs
+            ],
             decoration: InputDecoration(
               labelText:
                   'IP Addresses (หลาย IP)', // 'IP Addresses (Multiple IPs)' in Thai

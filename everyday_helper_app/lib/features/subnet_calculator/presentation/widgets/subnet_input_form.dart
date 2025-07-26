@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../view_models/subnet_calculator_view_model.dart';
+
+// Input formatters for different field types
+class IpAddressInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow only numbers, dots, and slashes for IP addresses with optional CIDR
+    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9./]'), '');
+
+    return TextEditingValue(
+      text: filteredString,
+      selection: TextSelection.collapsed(offset: filteredString.length),
+    );
+  }
+}
+
+class SubnetMaskInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Allow only numbers and dots for subnet masks and CIDR numbers
+    final filteredString = newValue.text.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    return TextEditingValue(
+      text: filteredString,
+      selection: TextSelection.collapsed(offset: filteredString.length),
+    );
+  }
+}
 
 class SubnetInputForm extends StatefulWidget {
   const SubnetInputForm({super.key});
@@ -93,6 +127,12 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                 // IP Address input
                 TextFormField(
                   controller: _ipAddressController,
+                  inputFormatters: [
+                    IpAddressInputFormatter(),
+                    LengthLimitingTextInputFormatter(
+                      18,
+                    ), // Max length for IP with CIDR (e.g., 192.168.100.100/32)
+                  ],
                   decoration: InputDecoration(
                     labelText: 'IP Address',
                     hintText:
@@ -114,6 +154,12 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                 TextFormField(
                   controller: _maskOrCidrController,
                   focusNode: _cidrFocusNode,
+                  inputFormatters: [
+                    SubnetMaskInputFormatter(),
+                    LengthLimitingTextInputFormatter(
+                      15,
+                    ), // Max length for subnet mask (255.255.255.255)
+                  ],
                   decoration: InputDecoration(
                     labelText:
                         'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai
