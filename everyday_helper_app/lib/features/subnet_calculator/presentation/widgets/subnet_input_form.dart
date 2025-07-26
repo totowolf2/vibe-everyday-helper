@@ -13,11 +13,13 @@ class SubnetInputForm extends StatefulWidget {
 class _SubnetInputFormState extends State<SubnetInputForm> {
   final TextEditingController _ipAddressController = TextEditingController();
   final TextEditingController _maskOrCidrController = TextEditingController();
+  final FocusNode _cidrFocusNode = FocusNode();
 
   @override
   void dispose() {
     _ipAddressController.dispose();
     _maskOrCidrController.dispose();
+    _cidrFocusNode.dispose();
     super.dispose();
   }
 
@@ -29,6 +31,31 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
     if (_maskOrCidrController.text != viewModel.maskOrCidr) {
       _maskOrCidrController.text = viewModel.maskOrCidr;
     }
+  }
+
+  void _handleIpAddressInput(
+    String value,
+    SubnetCalculatorViewModel viewModel,
+  ) {
+    // Check if user typed '/' to auto-focus CIDR field
+    if (value.endsWith('/')) {
+      // Remove the '/' from IP address field
+      final ipWithoutSlash = value.substring(0, value.length - 1);
+      _ipAddressController.text = ipWithoutSlash;
+      _ipAddressController.selection = TextSelection.fromPosition(
+        TextPosition(offset: ipWithoutSlash.length),
+      );
+
+      // Update ViewModel with IP address without slash
+      viewModel.updateIpAddress(ipWithoutSlash);
+
+      // Focus on CIDR field
+      _cidrFocusNode.requestFocus();
+      return;
+    }
+
+    // Normal update
+    viewModel.updateIpAddress(value);
   }
 
   @override
@@ -78,7 +105,7 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                   ),
                   keyboardType: TextInputType.text,
                   onChanged: (value) {
-                    viewModel.updateIpAddress(value);
+                    _handleIpAddressInput(value, viewModel);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -86,6 +113,7 @@ class _SubnetInputFormState extends State<SubnetInputForm> {
                 // Subnet Mask or CIDR input
                 TextFormField(
                   controller: _maskOrCidrController,
+                  focusNode: _cidrFocusNode,
                   decoration: InputDecoration(
                     labelText:
                         'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai

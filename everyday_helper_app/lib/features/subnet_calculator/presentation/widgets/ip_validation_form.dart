@@ -19,6 +19,7 @@ class _IpValidationFormState extends State<IpValidationForm>
       TextEditingController();
   final TextEditingController _networkMaskController = TextEditingController();
   final TextEditingController _testIpController = TextEditingController();
+  final FocusNode _networkMaskFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -39,6 +40,31 @@ class _IpValidationFormState extends State<IpValidationForm>
     }
   }
 
+  void _handleNetworkAddressInput(
+    String value,
+    SubnetCalculatorViewModel viewModel,
+  ) {
+    // Check if user typed '/' to auto-focus network mask field
+    if (value.endsWith('/')) {
+      // Remove the '/' from network address field
+      final addressWithoutSlash = value.substring(0, value.length - 1);
+      _networkAddressController.text = addressWithoutSlash;
+      _networkAddressController.selection = TextSelection.fromPosition(
+        TextPosition(offset: addressWithoutSlash.length),
+      );
+
+      // Update ViewModel with network address without slash
+      viewModel.updateNetworkAddress(addressWithoutSlash);
+
+      // Focus on network mask field
+      _networkMaskFocusNode.requestFocus();
+      return;
+    }
+
+    // Normal update
+    viewModel.updateNetworkAddress(value);
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -46,6 +72,7 @@ class _IpValidationFormState extends State<IpValidationForm>
     _networkAddressController.dispose();
     _networkMaskController.dispose();
     _testIpController.dispose();
+    _networkMaskFocusNode.dispose();
     super.dispose();
   }
 
@@ -174,7 +201,7 @@ class _IpValidationFormState extends State<IpValidationForm>
           ),
           keyboardType: TextInputType.text,
           onChanged: (value) {
-            viewModel.updateNetworkAddress(value);
+            _handleNetworkAddressInput(value, viewModel);
           },
         ),
         const SizedBox(height: 16),
@@ -182,6 +209,7 @@ class _IpValidationFormState extends State<IpValidationForm>
         // Subnet Mask or CIDR input
         TextFormField(
           controller: _networkMaskController,
+          focusNode: _networkMaskFocusNode,
           decoration: InputDecoration(
             labelText: 'Subnet Mask หรือ CIDR', // 'Subnet Mask or CIDR' in Thai
             hintText: '255.255.255.0 หรือ 24', // 'or 24' in Thai
