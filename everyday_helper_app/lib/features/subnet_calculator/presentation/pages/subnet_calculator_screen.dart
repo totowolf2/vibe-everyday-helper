@@ -5,7 +5,7 @@ import '../view_models/subnet_calculator_view_model.dart';
 import '../widgets/subnet_input_form.dart';
 import '../widgets/subnet_result_display.dart';
 import '../widgets/ip_validation_form.dart';
-import '../widgets/calculation_history_list.dart';
+import 'calculation_history_page.dart';
 
 class SubnetCalculatorScreen extends StatefulWidget {
   const SubnetCalculatorScreen({super.key});
@@ -22,7 +22,7 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
 
     // Listen to tab controller changes (including swipes)
     _tabController.addListener(_onTabChange);
@@ -52,10 +52,34 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
           // Store reference to ViewModel for tab change listener
           _viewModel = viewModel;
 
+          // Update TabController when ViewModel tab changes
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final targetIndex = viewModel.currentTab.index;
+            if (_tabController.index != targetIndex) {
+              _tabController.animateTo(targetIndex);
+            }
+          });
+
           return Scaffold(
             appBar: AppBar(
               title: const Text('Subnet Calculator'),
               centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'ประวัติการคำนวณ', // 'Calculation History' in Thai
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CalculationHistoryPage(
+                          viewModel: viewModel,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
               bottom: TabBar(
                 controller: _tabController,
                 labelColor: Colors.white,
@@ -69,10 +93,6 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                   Tab(
                     icon: Icon(Icons.verified_user),
                     text: 'ตรวจสอบ IP', // 'Validate IP' in Thai
-                  ),
-                  Tab(
-                    icon: Icon(Icons.history),
-                    text: 'ประวัติ', // 'History' in Thai
                   ),
                 ],
               ),
@@ -103,7 +123,6 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                   children: [
                     _buildCalculationTab(),
                     _buildValidationTab(),
-                    _buildHistoryTab(),
                   ],
                 );
               },
@@ -174,19 +193,7 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                     );
 
                   case SubnetCalculatorTab.history:
-                    if (viewModel.hasHistory) {
-                      return FloatingActionButton.extended(
-                        onPressed: () =>
-                            _showClearHistoryDialog(context, viewModel),
-                        icon: const Icon(Icons.delete_sweep),
-                        label: const Text(
-                          'ล้างประวัติ',
-                        ), // 'Clear History' in Thai
-                        backgroundColor: Colors.red[600],
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
+                    return const SizedBox.shrink();
                 }
               },
             ),
@@ -222,47 +229,4 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
     );
   }
 
-  Widget _buildHistoryTab() {
-    return const Padding(
-      padding: EdgeInsets.all(AppConstants.defaultPadding),
-      child: CalculationHistoryList(),
-    );
-  }
-
-  void _showClearHistoryDialog(
-    BuildContext context,
-    SubnetCalculatorViewModel viewModel,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('ล้างประวัติทั้งหมด'), // 'Clear All History' in Thai
-        content: const Text(
-          'คุณต้องการล้างประวัติการคำนวณทั้งหมดหรือไม่?\n\nการดำเนินการนี้ไม่สามารถยกเลิกได้', // 'Do you want to clear all calculation history? This action cannot be undone' in Thai
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('ยกเลิก'), // 'Cancel' in Thai
-          ),
-          TextButton(
-            onPressed: () {
-              viewModel.clearHistory();
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'ล้างประวัติทั้งหมดแล้ว',
-                  ), // 'All history cleared' in Thai
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('ล้างทั้งหมด'), // 'Clear All' in Thai
-          ),
-        ],
-      ),
-    );
-  }
 }

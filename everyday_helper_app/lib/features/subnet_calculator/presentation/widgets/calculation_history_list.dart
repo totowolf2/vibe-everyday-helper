@@ -284,11 +284,17 @@ class CalculationHistoryList extends StatelessWidget {
           ],
         ),
         onTap: () {
+          // Use the history data and navigate to appropriate tab
           if (entry.type == SubnetCalculationType.subnetCalculation) {
             viewModel.useHistoryCalculation(entry);
+            viewModel.switchTab(SubnetCalculatorTab.calculation);
           } else {
             viewModel.useHistoryValidation(entry);
+            viewModel.switchTab(SubnetCalculatorTab.validation);
           }
+          
+          // Navigate back to subnet calculator screen (pop only the history page)
+          Navigator.of(context).pop();
         },
       ),
     );
