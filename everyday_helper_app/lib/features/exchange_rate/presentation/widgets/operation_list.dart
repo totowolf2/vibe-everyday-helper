@@ -44,6 +44,23 @@ class OperationList extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: viewModel.operations.length,
                     buildDefaultDragHandles: false,
+                    proxyDecorator: (child, index, animation) {
+                      return AnimatedBuilder(
+                        animation: animation,
+                        builder: (context, child) {
+                          return Material(
+                            elevation: 6,
+                            shadowColor: Theme.of(
+                              context,
+                            ).colorScheme.shadow.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Theme.of(context).focusColor,
+                            child: child,
+                          );
+                        },
+                        child: child,
+                      );
+                    },
                     onReorder: (oldIndex, newIndex) {
                       viewModel.reorderOperation(oldIndex, newIndex);
                     },
