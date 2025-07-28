@@ -67,7 +67,7 @@ class OperationList extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final operation = viewModel.operations[index];
                       return Padding(
-                        key: ValueKey('operation_$index'),
+                        key: ValueKey('${operation.type.index}_${operation.value}_$index'),
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: OperationInput(
                           initialOperation: operation,

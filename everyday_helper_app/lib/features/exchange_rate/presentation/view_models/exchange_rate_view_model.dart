@@ -310,21 +310,35 @@ class ExchangeRateViewModel extends ChangeNotifier {
   }
 
   void reorderOperation(int oldIndex, int newIndex) {
-    if (oldIndex < 0 || oldIndex >= _operations.length ||
-        newIndex < 0 || newIndex >= _operations.length) {
-      _setError('Invalid operation indices for reordering');
+    if (oldIndex < 0 || oldIndex >= _operations.length || oldIndex == newIndex) {
       return;
     }
 
     _clearError();
     
-    // Adjust newIndex if dragging downward
+    // Create a new list to ensure proper reordering
+    final List<MathOperation> newOperations = List<MathOperation>.from(_operations);
+    
+    // Remove the item from old position
+    final MathOperation operation = newOperations.removeAt(oldIndex);
+    
+    // Calculate the correct insertion index
+    int insertIndex = newIndex;
     if (newIndex > oldIndex) {
-      newIndex -= 1;
+      // When moving down, the insertion point is one less
+      insertIndex = newIndex - 1;
     }
     
-    final operation = _operations.removeAt(oldIndex);
-    _operations.insert(newIndex, operation);
+    // Clamp to valid range
+    insertIndex = insertIndex.clamp(0, newOperations.length);
+    
+    // Insert at the new position
+    newOperations.insert(insertIndex, operation);
+    
+    // Update the operations list
+    _operations.clear();
+    _operations.addAll(newOperations);
+    
     _recalculateSteps();
     notifyListeners();
   }
