@@ -43,6 +43,7 @@ class OperationList extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: viewModel.operations.length,
+                    buildDefaultDragHandles: false,
                     onReorder: (oldIndex, newIndex) {
                       viewModel.reorderOperation(oldIndex, newIndex);
                     },
@@ -72,7 +73,8 @@ class OperationList extends StatelessWidget {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () => _showAddOperationDialog(context, viewModel),
+                        onPressed: () =>
+                            _showAddOperationDialog(context, viewModel),
                         icon: const Icon(Icons.add),
                         label: const Text('เพิ่มการดำเนินการ'),
                         style: OutlinedButton.styleFrom(
@@ -156,17 +158,17 @@ class OperationList extends StatelessWidget {
                       }
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Value input
                   TextField(
                     controller: controller,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d*\.?\d*$'),
-                      ),
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
                     ],
                     decoration: const InputDecoration(
                       labelText: 'ค่า',
