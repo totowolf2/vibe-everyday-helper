@@ -113,6 +113,21 @@ class _OperationInputState extends State<OperationInput> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
+              // Drag handle
+              ReorderableDragStartListener(
+                index: widget.index,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Icon(
+                    Icons.drag_handle,
+                    color: Theme.of(context).colorScheme.outline,
+                    size: 20,
+                  ),
+                ),
+              ),
+              
+              const SizedBox(width: 4),
+              
               // Operation type selector
               Container(
                 height: 40, // Set fixed height to match TextField

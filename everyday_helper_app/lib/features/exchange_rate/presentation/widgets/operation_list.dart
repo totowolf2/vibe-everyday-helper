@@ -37,25 +37,33 @@ class OperationList extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Operation inputs
+                // Operation inputs with drag and drop
                 if (viewModel.hasOperations) ...[
-                  ...viewModel.operations.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final operation = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: OperationInput(
-                        initialOperation: operation,
-                        index: index,
-                        onChanged: (newOperation) {
-                          viewModel.updateOperation(index, newOperation);
-                        },
-                        onRemove: () {
-                          viewModel.removeOperation(index);
-                        },
-                      ),
-                    );
-                  }),
+                  ReorderableListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: viewModel.operations.length,
+                    onReorder: (oldIndex, newIndex) {
+                      viewModel.reorderOperation(oldIndex, newIndex);
+                    },
+                    itemBuilder: (context, index) {
+                      final operation = viewModel.operations[index];
+                      return Padding(
+                        key: ValueKey('operation_$index'),
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: OperationInput(
+                          initialOperation: operation,
+                          index: index,
+                          onChanged: (newOperation) {
+                            viewModel.updateOperation(index, newOperation);
+                          },
+                          onRemove: () {
+                            viewModel.removeOperation(index);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 8),
                 ],
 
@@ -79,7 +87,7 @@ class OperationList extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'เพิ่มการดำเนินการทางคณิตศาสตร์ (คูณ หรือ หาร) เพื่อคำนวณค่าเพิ่มเติม\nการดำเนินการจะเรียงตามลำดับที่เพิ่ม',
+                      'เพิ่มการดำเนินการทางคณิตศาสตร์ (คูณ หรือ หาร) เพื่อคำนวณค่าเพิ่มเติม\nการดำเนินการจะเรียงตามลำดับที่เพิ่ม\nสามารถลากย้ายเพื่อเปลี่ยนลำดับได้',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.outline,
                       ),

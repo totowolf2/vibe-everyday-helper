@@ -309,6 +309,26 @@ class ExchangeRateViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reorderOperation(int oldIndex, int newIndex) {
+    if (oldIndex < 0 || oldIndex >= _operations.length ||
+        newIndex < 0 || newIndex >= _operations.length) {
+      _setError('Invalid operation indices for reordering');
+      return;
+    }
+
+    _clearError();
+    
+    // Adjust newIndex if dragging downward
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    
+    final operation = _operations.removeAt(oldIndex);
+    _operations.insert(newIndex, operation);
+    _recalculateSteps();
+    notifyListeners();
+  }
+
 
   void clearError() {
     _clearError();
