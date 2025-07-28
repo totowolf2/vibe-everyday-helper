@@ -5,8 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../view_models/exchange_rate_view_model.dart';
 import '../widgets/exchange_rate_header.dart';
 import '../widgets/currency_selector.dart';
-import '../widgets/multiplier_list.dart';
-import '../widgets/divisor_list.dart';
+import '../widgets/operation_list.dart';
 import '../widgets/calculation_results.dart';
 import '../../data/repositories/exchange_rate_repository_impl.dart';
 import '../../data/datasources/frankfurter_api_datasource.dart';
@@ -89,6 +88,37 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
     super.dispose();
   }
 
+  void _showClearConfirmDialog(BuildContext context, ExchangeRateViewModel viewModel) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('ล้างค่าทั้งหมด'),
+          content: const Text('คุณต้องการล้างค่าการคำนวณทั้งหมดและเริ่มใหม่หรือไม่?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('ยกเลิก'),
+            ),
+            FilledButton(
+              onPressed: () {
+                viewModel.clearAllCalculations();
+                _amountController.clear(); // Also clear the text field
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('ล้างค่าการคำนวณทั้งหมดแล้ว'),
+                  ),
+                );
+              },
+              child: const Text('ล้างทั้งหมด'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isInitializing) {
@@ -162,6 +192,15 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
           title: const Text('💱 Exchange Rate Calculator'),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [
+            Consumer<ExchangeRateViewModel>(
+              builder: (context, viewModel, child) {
+                return IconButton(
+                  onPressed: () => _showClearConfirmDialog(context, viewModel),
+                  icon: const Icon(Icons.clear_all),
+                  tooltip: 'ล้างค่าทั้งหมด',
+                );
+              },
+            ),
             Consumer<ExchangeRateViewModel>(
               builder: (context, viewModel, child) {
                 return IconButton(
@@ -294,13 +333,8 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Multiplier list
-                  const MultiplierList(),
-
-                  const SizedBox(height: 16),
-
-                  // Divisor list
-                  const DivisorList(),
+                  // Operation list (unified multipliers and divisors)
+                  const OperationList(),
 
                   const SizedBox(height: 16),
 

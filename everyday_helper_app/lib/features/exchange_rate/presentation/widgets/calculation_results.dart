@@ -44,22 +44,25 @@ class CalculationResults extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Column(
-      children: [
-        Icon(
-          Icons.calculate_outlined,
-          size: 48,
-          color: Theme.of(context).colorScheme.outline,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'กรอกจำนวนเงินเพื่อดูผลการคำนวณ',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.calculate_outlined,
+            size: 48,
             color: Theme.of(context).colorScheme.outline,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+          const SizedBox(height: 8),
+          Text(
+            'กรอกจำนวนเงินเพื่อดูผลการคำนวณ',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

@@ -3,13 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/models/exchange_rate.dart';
 import '../../domain/models/currency.dart';
-import '../../domain/models/multiplier_formula.dart';
 import '../../domain/models/calculation_step.dart';
+import '../../domain/models/math_operation.dart';
 import '../../domain/repositories/exchange_rate_repository.dart';
 import '../../data/datasources/frankfurter_api_datasource.dart';
 
 class ExchangeRateViewModel extends ChangeNotifier {
-  static const String _formulaKey = 'exchange_rate_formula';
   static const String _lastUsedCurrenciesKey = 'exchange_rate_last_currencies';
 
   final ExchangeRateRepository _repository;
@@ -21,8 +20,8 @@ class ExchangeRateViewModel extends ChangeNotifier {
   double _baseAmount = 0.0;
   List<double> _multipliers = [];
   List<double> _divisors = [];
+  List<MathOperation> _operations = [];
   List<CalculationStep> _calculationSteps = [];
-  MultiplierFormula? _currentFormula;
 
   final bool _isLoading = false;
   bool _isRefreshing = false;
@@ -43,9 +42,9 @@ class ExchangeRateViewModel extends ChangeNotifier {
   double get baseAmount => _baseAmount;
   List<double> get multipliers => List.unmodifiable(_multipliers);
   List<double> get divisors => List.unmodifiable(_divisors);
+  List<MathOperation> get operations => List.unmodifiable(_operations);
   List<CalculationStep> get calculationSteps =>
       List.unmodifiable(_calculationSteps);
-  MultiplierFormula? get currentFormula => _currentFormula;
 
   bool get isLoading => _isLoading;
   bool get isRefreshing => _isRefreshing;
@@ -56,6 +55,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
   bool get hasValidInput => _baseAmount > 0 && _currentExchangeRate != null;
   bool get hasMultipliers => _multipliers.isNotEmpty;
   bool get hasDivisors => _divisors.isNotEmpty;
+  bool get hasOperations => _operations.isNotEmpty;
   bool get canCalculate => hasValidInput;
 
   double get convertedAmount {
@@ -67,12 +67,20 @@ class ExchangeRateViewModel extends ChangeNotifier {
     if (!hasValidInput) return 0.0;
 
     double result = convertedAmount;
+    
+    // Apply legacy operations first (for backward compatibility)
     for (final multiplier in _multipliers) {
       result *= multiplier;
     }
     for (final divisor in _divisors) {
       result /= divisor;
     }
+    
+    // Apply unified operations in order
+    for (final operation in _operations) {
+      result = operation.apply(result);
+    }
+    
     return result;
   }
 
@@ -156,7 +164,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
 
     _baseAmount = amount;
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -169,7 +176,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _multipliers.add(multiplier);
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -187,7 +193,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _multipliers[index] = newValue;
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -200,14 +205,12 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _multipliers.removeAt(index);
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
   void clearMultipliers() {
     _multipliers.clear();
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -220,7 +223,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _divisors.add(divisor);
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -238,7 +240,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _divisors[index] = newValue;
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
@@ -251,30 +252,76 @@ class ExchangeRateViewModel extends ChangeNotifier {
     _clearError();
     _divisors.removeAt(index);
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
   void clearDivisors() {
     _divisors.clear();
     _recalculateSteps();
-    _saveCurrentFormula();
     notifyListeners();
   }
 
-  void loadFormula(MultiplierFormula formula) {
-    _baseCurrency = formula.baseCurrency;
-    _targetCurrency = formula.targetCurrency;
-    _baseAmount = formula.baseAmount;
-    _multipliers = List.from(formula.multipliers);
-    _divisors = List.from(formula.divisors);
-    _currentFormula = formula.withUpdatedUsage();
+  // Unified operation methods
+  void addOperation(MathOperation operation) {
+    if (!operation.isValid) {
+      _setError('Operation value must be greater than zero');
+      return;
+    }
 
-    refreshExchangeRate();
-    _saveCurrentFormula();
+    _clearError();
+    _operations.add(operation);
+    _recalculateSteps();
+    notifyListeners();
   }
 
+  void updateOperation(int index, MathOperation newOperation) {
+    if (index < 0 || index >= _operations.length) {
+      _setError('Invalid operation index');
+      return;
+    }
+
+    if (!newOperation.isValid) {
+      _setError('Operation value must be greater than zero');
+      return;
+    }
+
+    _clearError();
+    _operations[index] = newOperation;
+    _recalculateSteps();
+    notifyListeners();
+  }
+
+  void removeOperation(int index) {
+    if (index < 0 || index >= _operations.length) {
+      _setError('Invalid operation index');
+      return;
+    }
+
+    _clearError();
+    _operations.removeAt(index);
+    _recalculateSteps();
+    notifyListeners();
+  }
+
+  void clearOperations() {
+    _operations.clear();
+    _recalculateSteps();
+    notifyListeners();
+  }
+
+
   void clearError() {
+    _clearError();
+    notifyListeners();
+  }
+
+  // Clear all calculation values to start fresh
+  void clearAllCalculations() {
+    _baseAmount = 0.0;
+    _multipliers.clear();
+    _divisors.clear();
+    _operations.clear();
+    _recalculateSteps();
     _clearError();
     notifyListeners();
   }
@@ -327,6 +374,29 @@ class ExchangeRateViewModel extends ChangeNotifier {
       currentValue = currentValue / divisor;
     }
 
+    // Add unified operations
+    for (int i = 0; i < _operations.length; i++) {
+      final operation = _operations[i];
+      if (operation.isMultiply) {
+        steps.add(
+          CalculationStep.multiplication(
+            inputValue: currentValue,
+            multiplier: operation.value,
+            currency: _targetCurrency,
+          ),
+        );
+      } else {
+        steps.add(
+          CalculationStep.division(
+            inputValue: currentValue,
+            divisor: operation.value,
+            currency: _targetCurrency,
+          ),
+        );
+      }
+      currentValue = operation.apply(currentValue);
+    }
+
     _calculationSteps = steps;
   }
 
@@ -347,7 +417,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
   Future<void> _loadPersistedData() async {
     try {
       await _loadLastUsedCurrencies();
-      await _loadSavedFormula();
     } catch (e) {
       // Ignore loading errors, use defaults
     }
@@ -369,24 +438,6 @@ class ExchangeRateViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadSavedFormula() async {
-    final data = _prefs.getString(_formulaKey);
-    if (data == null) return;
-
-    try {
-      final Map<String, dynamic> formulaData = json.decode(data);
-      final formula = MultiplierFormula.fromMap(formulaData);
-
-      if (formula.isValid) {
-        _baseAmount = formula.baseAmount;
-        _multipliers = List.from(formula.multipliers);
-        _divisors = List.from(formula.divisors);
-        _currentFormula = formula;
-      }
-    } catch (e) {
-      // Ignore parsing errors, use defaults
-    }
-  }
 
   Future<void> _persistCurrencies() async {
     try {
@@ -400,21 +451,4 @@ class ExchangeRateViewModel extends ChangeNotifier {
     }
   }
 
-  void _saveCurrentFormula() {
-    try {
-      final formula = MultiplierFormula.create(
-        baseCurrency: _baseCurrency,
-        targetCurrency: _targetCurrency,
-        baseAmount: _baseAmount,
-        multipliers: _multipliers,
-        divisors: _divisors,
-      );
-
-      final data = json.encode(formula.toMap());
-      _prefs.setString(_formulaKey, data);
-      _currentFormula = formula;
-    } catch (e) {
-      // Ignore persistence errors
-    }
-  }
 }
