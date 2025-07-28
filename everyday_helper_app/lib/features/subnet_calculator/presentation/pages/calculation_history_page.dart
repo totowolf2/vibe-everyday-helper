@@ -6,11 +6,8 @@ import '../widgets/calculation_history_list.dart';
 
 class CalculationHistoryPage extends StatelessWidget {
   final SubnetCalculatorViewModel viewModel;
-  
-  const CalculationHistoryPage({
-    super.key,
-    required this.viewModel,
-  });
+
+  const CalculationHistoryPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +62,9 @@ class CalculationHistoryPage extends StatelessWidget {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('ล้างประวัติทั้งหมดแล้ว'), // 'All history cleared' in Thai
+                  content: Text(
+                    'ล้างประวัติทั้งหมดแล้ว',
+                  ), // 'All history cleared' in Thai
                   duration: Duration(seconds: 2),
                 ),
               );

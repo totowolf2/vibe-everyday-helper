@@ -11,6 +11,7 @@ import '../features/mathematics/presentation/pages/percentage_calculator_screen.
 import '../features/mathematics/presentation/pages/unit_converter_screen.dart';
 import '../features/tax_calculator/presentation/pages/tax_calculator_screen.dart';
 import '../features/subnet_calculator/presentation/pages/subnet_calculator_screen.dart';
+import '../features/exchange_rate/presentation/pages/exchange_rate_screen.dart';
 
 class AppRoutes {
   /// Generate route with optimized loading
@@ -97,6 +98,12 @@ class AppRoutes {
           settings: settings,
         );
 
+      case AppConstants.exchangeRateRoute:
+        return MaterialPageRoute(
+          builder: (context) => const ExchangeRateScreen(),
+          settings: settings,
+        );
+
       default:
         return MaterialPageRoute(
           builder: (context) => const HomeScreen(),
@@ -121,6 +128,10 @@ class AppRoutes {
 
   static void navigateToTaxCalculator(BuildContext context) {
     Navigator.of(context).pushNamed(AppConstants.taxCalculatorRoute);
+  }
+
+  static void navigateToExchangeRateCalculator(BuildContext context) {
+    Navigator.of(context).pushNamed(AppConstants.exchangeRateRoute);
   }
 }
 

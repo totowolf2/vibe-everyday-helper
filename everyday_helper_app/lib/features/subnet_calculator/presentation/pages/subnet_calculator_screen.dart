@@ -32,7 +32,7 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
   void _onTabChange() {
     if (_viewModel != null) {
       // Support both tap and swipe changes
-      if (_tabController.indexIsChanging || 
+      if (_tabController.indexIsChanging ||
           _viewModel!.currentTab.index != _tabController.index) {
         final newTab = SubnetCalculatorTab.values[_tabController.index];
         _viewModel!.switchTab(newTab);
@@ -45,10 +45,11 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
       // Handle swipe gestures during animation
       final animationValue = _tabController.animation!.value;
       final targetIndex = animationValue.round();
-      
+
       // Update ViewModel when user swipes past the midpoint
-      if (targetIndex != _viewModel!.currentTab.index && 
-          targetIndex >= 0 && targetIndex < 2) {
+      if (targetIndex != _viewModel!.currentTab.index &&
+          targetIndex >= 0 &&
+          targetIndex < 2) {
         final newTab = SubnetCalculatorTab.values[targetIndex];
         _viewModel!.switchTab(newTab);
       }
@@ -77,7 +78,8 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
           // Update TabController when ViewModel tab changes (but not during user swipe)
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final targetIndex = viewModel.currentTab.index;
-            if (_tabController.index != targetIndex && !_tabController.indexIsChanging) {
+            if (_tabController.index != targetIndex &&
+                !_tabController.indexIsChanging) {
               _tabController.animateTo(targetIndex);
             }
           });
@@ -94,9 +96,8 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CalculationHistoryPage(
-                          viewModel: viewModel,
-                        ),
+                        builder: (context) =>
+                            CalculationHistoryPage(viewModel: viewModel),
                       ),
                     );
                   },
@@ -142,10 +143,7 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
 
                 return TabBarView(
                   controller: _tabController,
-                  children: [
-                    _buildCalculationTab(),
-                    _buildValidationTab(),
-                  ],
+                  children: [_buildCalculationTab(), _buildValidationTab()],
                 );
               },
             ),
@@ -250,5 +248,4 @@ class _SubnetCalculatorScreenState extends State<SubnetCalculatorScreen>
       ),
     );
   }
-
 }

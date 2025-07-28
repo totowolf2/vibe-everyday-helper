@@ -37,19 +37,27 @@ class HelperTool {
         category: 'Calculations',
       ),
       const HelperTool(
-        title: 'Thai Tax Calculator',
-        description:
-            'Calculate personal income tax in Thailand with allowances and deductions',
-        icon: Icons.account_balance,
-        route: AppConstants.taxCalculatorRoute,
-        category: 'Calculations',
-      ),
-      const HelperTool(
         title: 'Subnet Calculator',
         description:
             'Calculate subnet information and validate IP addresses within networks',
         icon: Icons.network_check,
         route: AppConstants.subnetCalculatorRoute,
+        category: 'Calculations',
+      ),
+      const HelperTool(
+        title: 'Exchange Rate Calculator',
+        description:
+            'Convert currencies with real-time rates and apply multipliers for complex calculations',
+        icon: Icons.currency_exchange,
+        route: AppConstants.exchangeRateRoute,
+        category: 'Calculations',
+      ),
+      const HelperTool(
+        title: 'Thai Tax Calculator',
+        description:
+            'Calculate personal income tax in Thailand with allowances and deductions',
+        icon: Icons.account_balance,
+        route: AppConstants.taxCalculatorRoute,
         category: 'Calculations',
       ),
       // Future tools will be added here

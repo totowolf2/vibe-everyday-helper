@@ -28,6 +28,9 @@ class AppConstants {
   // Subnet Calculator Routes
   static const String subnetCalculatorRoute = '/subnet-calculator';
 
+  // Exchange Rate Calculator Routes
+  static const String exchangeRateRoute = '/exchange-rate';
+
   // UI Constants
   static const double defaultPadding = 16.0;
   static const double defaultMargin = 8.0;

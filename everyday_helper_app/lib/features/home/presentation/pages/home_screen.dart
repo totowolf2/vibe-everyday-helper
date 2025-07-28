@@ -109,6 +109,9 @@ class HomeScreen extends StatelessWidget {
       case AppConstants.subnetCalculatorRoute:
         Navigator.of(context).pushNamed(AppConstants.subnetCalculatorRoute);
         break;
+      case AppConstants.exchangeRateRoute:
+        AppRoutes.navigateToExchangeRateCalculator(context);
+        break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

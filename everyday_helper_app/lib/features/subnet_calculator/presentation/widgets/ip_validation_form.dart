@@ -17,7 +17,7 @@ class IpAddressInputFormatter extends TextInputFormatter {
 
     // Prevent consecutive dots
     filteredString = filteredString.replaceAll(RegExp(r'\.{2,}'), '.');
-    
+
     // Prevent starting with dot
     if (filteredString.startsWith('.')) {
       filteredString = filteredString.substring(1);
@@ -27,7 +27,7 @@ class IpAddressInputFormatter extends TextInputFormatter {
     if (filteredString.length > oldValue.text.length) {
       // Only format if we're adding characters (not deleting)
       final parts = filteredString.split('.');
-      
+
       // Limit to maximum 4 octets
       if (parts.length > 4) {
         return oldValue;
@@ -41,20 +41,20 @@ class IpAddressInputFormatter extends TextInputFormatter {
           // Handle CIDR notation
           final cidrParts = part.split('/');
           String octet = cidrParts[0];
-          
+
           // Validate octet (0-255)
           if (octet.isNotEmpty) {
             if (octet.length > 3) {
               octet = octet.substring(0, 3);
             }
-            
+
             final octetValue = int.tryParse(octet);
             if (octetValue != null && octetValue > 255) {
               // If value exceeds 255, truncate to valid range
               octet = '255';
             }
           }
-          
+
           // Validate CIDR (0-32)
           if (cidrParts.length > 1 && cidrParts[1].isNotEmpty) {
             final cidrValue = int.tryParse(cidrParts[1]);
@@ -62,7 +62,7 @@ class IpAddressInputFormatter extends TextInputFormatter {
               cidrParts[1] = '32';
             }
           }
-          
+
           formattedText += '$octet/${cidrParts.length > 1 ? cidrParts[1] : ''}';
         } else {
           // Regular IP octet
@@ -71,24 +71,25 @@ class IpAddressInputFormatter extends TextInputFormatter {
             if (i < 3 && parts.length < 4) {
               final remainingDigits = part.substring(3);
               part = part.substring(0, 3);
-              
+
               // Validate current octet
               final octetValue = int.tryParse(part);
               if (octetValue != null && octetValue > 255) {
                 part = '255';
               }
-              
-              formattedText += '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+
+              formattedText +=
+                  '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
             } else {
               // Last part or max parts reached: just truncate to 3 digits
               part = part.substring(0, 3);
-              
+
               // Validate octet
               final octetValue = int.tryParse(part);
               if (octetValue != null && octetValue > 255) {
                 part = '255';
               }
-              
+
               formattedText += part;
             }
           } else {
@@ -99,8 +100,11 @@ class IpAddressInputFormatter extends TextInputFormatter {
                 part = '255';
               }
             }
-            
-            if (part.length == 3 && i < 3 && !oldValue.text.endsWith('.') && parts.length < 4) {
+
+            if (part.length == 3 &&
+                i < 3 &&
+                !oldValue.text.endsWith('.') &&
+                parts.length < 4) {
               // Auto-add dot after 3 digits
               formattedText += '$part.';
             } else {
@@ -133,7 +137,7 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
 
     // Prevent consecutive dots
     filteredString = filteredString.replaceAll(RegExp(r'\.{2,}'), '.');
-    
+
     // Prevent starting with dot
     if (filteredString.startsWith('.')) {
       filteredString = filteredString.substring(1);
@@ -145,7 +149,7 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
       if (filteredString.contains('.')) {
         // Already has dots - treat as subnet mask
         final parts = filteredString.split('.');
-        
+
         // Limit to maximum 4 octets for subnet mask
         if (parts.length > 4) {
           return oldValue;
@@ -161,24 +165,25 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
               // Move extra digits to next part
               final remainingDigits = part.substring(3);
               part = part.substring(0, 3);
-              
+
               // Validate octet (0-255)
               final octetValue = int.tryParse(part);
               if (octetValue != null && octetValue > 255) {
                 part = '255';
               }
-              
-              formattedText += '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
+
+              formattedText +=
+                  '$part.${remainingDigits.length > 3 ? remainingDigits.substring(0, 3) : remainingDigits}';
             } else {
               // Last part or max parts: truncate to 3 digits
               part = part.substring(0, 3);
-              
+
               // Validate octet (0-255)
               final octetValue = int.tryParse(part);
               if (octetValue != null && octetValue > 255) {
                 part = '255';
               }
-              
+
               formattedText += part;
             }
           } else {
@@ -189,8 +194,11 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
                 part = '255';
               }
             }
-            
-            if (part.length == 3 && i < 3 && !oldValue.text.endsWith('.') && parts.length < 4) {
+
+            if (part.length == 3 &&
+                i < 3 &&
+                !oldValue.text.endsWith('.') &&
+                parts.length < 4) {
               // Auto-add dot after 3 digits
               formattedText += '$part.';
             } else {
@@ -226,9 +234,11 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
           String formattedText = '';
           for (int i = 0; i < filteredString.length; i += 3) {
             if (i > 0) formattedText += '.';
-            final endIndex = (i + 3 < filteredString.length) ? i + 3 : filteredString.length;
+            final endIndex = (i + 3 < filteredString.length)
+                ? i + 3
+                : filteredString.length;
             String part = filteredString.substring(i, endIndex);
-            
+
             // Validate each octet
             if (part.isNotEmpty) {
               final octetValue = int.tryParse(part);
@@ -236,7 +246,7 @@ class SubnetMaskInputFormatter extends TextInputFormatter {
                 part = '255';
               }
             }
-            
+
             formattedText += part;
           }
           filteredString = formattedText;
