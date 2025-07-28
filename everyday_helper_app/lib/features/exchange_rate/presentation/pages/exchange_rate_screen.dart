@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../view_models/exchange_rate_view_model.dart';
@@ -42,7 +43,12 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
         preferences: prefs,
       );
 
-      _amountController.text = viewModel.baseAmount.toString();
+      // Set initial amount but clear 0.0 if it's the default
+      if (viewModel.baseAmount == 0.0) {
+        _amountController.text = '';
+      } else {
+        _amountController.text = viewModel.baseAmount.toString();
+      }
       _amountController.addListener(_onAmountChanged);
 
       await viewModel.initialize();
@@ -64,7 +70,14 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
   }
 
   void _onAmountChanged() {
-    final text = _amountController.text;
+    final text = _amountController.text.trim();
+    // Handle empty string as 0.0
+    if (text.isEmpty) {
+      _viewModel?.setBaseAmount(0.0);
+      return;
+    }
+    
+    // Parse the amount, default to 0.0 if invalid
     final amount = double.tryParse(text) ?? 0.0;
     _viewModel?.setBaseAmount(amount);
   }
@@ -261,6 +274,11 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d*$'),
+                              ),
+                            ],
                             decoration: InputDecoration(
                               hintText: 'กรอกจำนวนเงิน',
                               suffixText: viewModel.baseCurrency.code,
