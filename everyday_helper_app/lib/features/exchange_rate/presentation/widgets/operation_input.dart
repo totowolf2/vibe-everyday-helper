@@ -28,7 +28,9 @@ class _OperationInputState extends State<OperationInput> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialOperation.value.toString());
+    _controller = TextEditingController(
+      text: widget.initialOperation.value.toString(),
+    );
     _selectedType = widget.initialOperation.type;
     _controller.addListener(_onTextChanged);
   }
@@ -58,7 +60,7 @@ class _OperationInputState extends State<OperationInput> {
       setState(() {
         _selectedType = type;
       });
-      
+
       final value = double.tryParse(_controller.text);
       if (value != null && value > 0) {
         final operation = MathOperation(type: type, value: value);
@@ -108,13 +110,16 @@ class _OperationInputState extends State<OperationInput> {
       },
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               // Operation type selector
               Container(
+                height: 40, // Set fixed height to match TextField
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: DropdownButton<OperationType>(
@@ -125,7 +130,10 @@ class _OperationInputState extends State<OperationInput> {
                     DropdownMenuItem(
                       value: OperationType.multiply,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -139,7 +147,10 @@ class _OperationInputState extends State<OperationInput> {
                     DropdownMenuItem(
                       value: OperationType.divide,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -153,36 +164,37 @@ class _OperationInputState extends State<OperationInput> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 12),
-              
+
               // Value input
               Expanded(
-                child: TextField(
-                  controller: _controller,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'^\d*\.?\d*$'),
+                child: SizedBox(
+                  height: 40, // Set fixed height to match dropdown
+                  child: TextField(
+                    controller: _controller,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
                     ),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: 'กรอกค่า',
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+                    ],
+                    decoration: InputDecoration(
+                      hintText: 'กรอกค่า',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      errorText: _isValid ? null : 'ค่าต้องมากกว่า 0',
+                      isDense: true,
                     ),
-                    errorText: _isValid ? null : 'ค่าต้องมากกว่า 0',
-                    isDense: true,
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 8),
-              
+
               // Remove button
               IconButton(
                 onPressed: widget.onRemove,
