@@ -7,6 +7,7 @@ class MultiplierFormula {
   final Currency targetCurrency;
   final double baseAmount;
   final List<double> multipliers;
+  final List<double> divisors;
   final DateTime createdAt;
   final DateTime lastUsed;
 
@@ -16,6 +17,7 @@ class MultiplierFormula {
     required this.targetCurrency,
     required this.baseAmount,
     required this.multipliers,
+    required this.divisors,
     required this.createdAt,
     required this.lastUsed,
   });
@@ -25,6 +27,7 @@ class MultiplierFormula {
     required Currency targetCurrency,
     required double baseAmount,
     required List<double> multipliers,
+    List<double>? divisors,
   }) {
     final now = DateTime.now();
     return MultiplierFormula(
@@ -33,6 +36,7 @@ class MultiplierFormula {
       targetCurrency: targetCurrency,
       baseAmount: baseAmount,
       multipliers: List.from(multipliers),
+      divisors: List.from(divisors ?? []),
       createdAt: now,
       lastUsed: now,
     );
@@ -44,18 +48,26 @@ class MultiplierFormula {
 
   bool get isValid =>
       baseAmount > 0 &&
-      multipliers.isNotEmpty &&
+      (multipliers.isNotEmpty || divisors.isNotEmpty) &&
       multipliers.every((m) => m > 0) &&
+      divisors.every((d) => d > 0) &&
       baseCurrency.isValid &&
       targetCurrency.isValid;
 
   bool get hasMultipliers => multipliers.isNotEmpty;
+  bool get hasDivisors => divisors.isNotEmpty;
 
   int get multiplierCount => multipliers.length;
+  int get divisorCount => divisors.length;
 
   double get totalMultiplier {
     if (multipliers.isEmpty) return 1.0;
     return multipliers.fold(1.0, (product, multiplier) => product * multiplier);
+  }
+  
+  double get totalDivisor {
+    if (divisors.isEmpty) return 1.0;
+    return divisors.fold(1.0, (product, divisor) => product * divisor);
   }
 
   List<CalculationStep> generateSteps({required double exchangeRate}) {
@@ -88,19 +100,39 @@ class MultiplierFormula {
       currentValue = currentValue * multiplier;
     }
 
+    for (int i = 0; i < divisors.length; i++) {
+      final divisor = divisors[i];
+      steps.add(
+        CalculationStep.division(
+          inputValue: currentValue,
+          divisor: divisor,
+          currency: targetCurrency,
+        ),
+      );
+      currentValue = currentValue / divisor;
+    }
+
     return steps;
   }
 
   double calculateFinalAmount({required double exchangeRate}) {
     final convertedAmount = baseAmount * exchangeRate;
-    return convertedAmount * totalMultiplier;
+    return (convertedAmount * totalMultiplier) / totalDivisor;
   }
 
   String get displaySummary {
     final multipliersText = multipliers
         .map((m) => m.toStringAsFixed(2))
         .join(' × ');
-    return '${baseAmount.toStringAsFixed(2)} ${baseCurrency.code} → ${targetCurrency.code} × $multipliersText';
+    final divisorsText = divisors
+        .map((d) => d.toStringAsFixed(2))
+        .join(' ÷ ');
+    
+    String operations = '';
+    if (multipliersText.isNotEmpty) operations += ' × $multipliersText';
+    if (divisorsText.isNotEmpty) operations += ' ÷ $divisorsText';
+    
+    return '${baseAmount.toStringAsFixed(2)} ${baseCurrency.code} → ${targetCurrency.code}$operations';
   }
 
   MultiplierFormula copyWith({
@@ -109,6 +141,7 @@ class MultiplierFormula {
     Currency? targetCurrency,
     double? baseAmount,
     List<double>? multipliers,
+    List<double>? divisors,
     DateTime? createdAt,
     DateTime? lastUsed,
   }) {
@@ -118,6 +151,7 @@ class MultiplierFormula {
       targetCurrency: targetCurrency ?? this.targetCurrency,
       baseAmount: baseAmount ?? this.baseAmount,
       multipliers: multipliers ?? List.from(this.multipliers),
+      divisors: divisors ?? List.from(this.divisors),
       createdAt: createdAt ?? this.createdAt,
       lastUsed: lastUsed ?? this.lastUsed,
     );
@@ -162,6 +196,7 @@ class MultiplierFormula {
       'targetCurrency': targetCurrency.toMap(),
       'baseAmount': baseAmount,
       'multipliers': multipliers,
+      'divisors': divisors,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'lastUsed': lastUsed.millisecondsSinceEpoch,
     };
@@ -176,6 +211,9 @@ class MultiplierFormula {
       multipliers: List<double>.from(
         (map['multipliers'] ?? []).map((m) => m.toDouble()),
       ),
+      divisors: List<double>.from(
+        (map['divisors'] ?? []).map((d) => d.toDouble()),
+      ),
       createdAt: DateTime.fromMillisecondsSinceEpoch(
         map['createdAt'] ?? DateTime.now().millisecondsSinceEpoch,
       ),
@@ -187,7 +225,7 @@ class MultiplierFormula {
 
   @override
   String toString() {
-    return 'MultiplierFormula(id: $id, baseCurrency: $baseCurrency, targetCurrency: $targetCurrency, baseAmount: $baseAmount, multipliers: $multipliers, createdAt: $createdAt, lastUsed: $lastUsed)';
+    return 'MultiplierFormula(id: $id, baseCurrency: $baseCurrency, targetCurrency: $targetCurrency, baseAmount: $baseAmount, multipliers: $multipliers, divisors: $divisors, createdAt: $createdAt, lastUsed: $lastUsed)';
   }
 
   @override
@@ -199,6 +237,7 @@ class MultiplierFormula {
         other.targetCurrency == targetCurrency &&
         other.baseAmount == baseAmount &&
         _listEquals(other.multipliers, multipliers) &&
+        _listEquals(other.divisors, divisors) &&
         other.createdAt == createdAt &&
         other.lastUsed == lastUsed;
   }
@@ -210,6 +249,7 @@ class MultiplierFormula {
         targetCurrency.hashCode ^
         baseAmount.hashCode ^
         multipliers.hashCode ^
+        divisors.hashCode ^
         createdAt.hashCode ^
         lastUsed.hashCode;
   }

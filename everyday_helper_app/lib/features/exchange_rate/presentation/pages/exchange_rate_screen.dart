@@ -6,6 +6,7 @@ import '../view_models/exchange_rate_view_model.dart';
 import '../widgets/exchange_rate_header.dart';
 import '../widgets/currency_selector.dart';
 import '../widgets/multiplier_list.dart';
+import '../widgets/divisor_list.dart';
 import '../widgets/calculation_results.dart';
 import '../../data/repositories/exchange_rate_repository_impl.dart';
 import '../../data/datasources/frankfurter_api_datasource.dart';
@@ -295,6 +296,11 @@ class _ExchangeRateScreenState extends State<ExchangeRateScreen> {
 
                   // Multiplier list
                   const MultiplierList(),
+
+                  const SizedBox(height: 16),
+
+                  // Divisor list
+                  const DivisorList(),
 
                   const SizedBox(height: 16),
 

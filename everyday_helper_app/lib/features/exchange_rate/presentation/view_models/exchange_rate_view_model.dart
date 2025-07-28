@@ -20,6 +20,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
   Currency _targetCurrency = Currency.thb;
   double _baseAmount = 0.0;
   List<double> _multipliers = [];
+  List<double> _divisors = [];
   List<CalculationStep> _calculationSteps = [];
   MultiplierFormula? _currentFormula;
 
@@ -41,6 +42,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
   Currency get targetCurrency => _targetCurrency;
   double get baseAmount => _baseAmount;
   List<double> get multipliers => List.unmodifiable(_multipliers);
+  List<double> get divisors => List.unmodifiable(_divisors);
   List<CalculationStep> get calculationSteps =>
       List.unmodifiable(_calculationSteps);
   MultiplierFormula? get currentFormula => _currentFormula;
@@ -53,6 +55,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
 
   bool get hasValidInput => _baseAmount > 0 && _currentExchangeRate != null;
   bool get hasMultipliers => _multipliers.isNotEmpty;
+  bool get hasDivisors => _divisors.isNotEmpty;
   bool get canCalculate => hasValidInput;
 
   double get convertedAmount {
@@ -66,6 +69,9 @@ class ExchangeRateViewModel extends ChangeNotifier {
     double result = convertedAmount;
     for (final multiplier in _multipliers) {
       result *= multiplier;
+    }
+    for (final divisor in _divisors) {
+      result /= divisor;
     }
     return result;
   }
@@ -205,11 +211,63 @@ class ExchangeRateViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addDivisor(double divisor) {
+    if (divisor <= 0) {
+      _setError('Divisor must be greater than zero');
+      return;
+    }
+
+    _clearError();
+    _divisors.add(divisor);
+    _recalculateSteps();
+    _saveCurrentFormula();
+    notifyListeners();
+  }
+
+  void updateDivisor(int index, double newValue) {
+    if (index < 0 || index >= _divisors.length) {
+      _setError('Invalid divisor index');
+      return;
+    }
+
+    if (newValue <= 0) {
+      _setError('Divisor must be greater than zero');
+      return;
+    }
+
+    _clearError();
+    _divisors[index] = newValue;
+    _recalculateSteps();
+    _saveCurrentFormula();
+    notifyListeners();
+  }
+
+  void removeDivisor(int index) {
+    if (index < 0 || index >= _divisors.length) {
+      _setError('Invalid divisor index');
+      return;
+    }
+
+    _clearError();
+    _divisors.removeAt(index);
+    _recalculateSteps();
+    _saveCurrentFormula();
+    notifyListeners();
+  }
+
+  void clearDivisors() {
+    _divisors.clear();
+    _recalculateSteps();
+    _saveCurrentFormula();
+    notifyListeners();
+  }
+
   void loadFormula(MultiplierFormula formula) {
     _baseCurrency = formula.baseCurrency;
     _targetCurrency = formula.targetCurrency;
     _baseAmount = formula.baseAmount;
     _multipliers = List.from(formula.multipliers);
+    _divisors = List.from(formula.divisors);
     _currentFormula = formula.withUpdatedUsage();
 
     refreshExchangeRate();
@@ -255,6 +313,18 @@ class ExchangeRateViewModel extends ChangeNotifier {
         ),
       );
       currentValue = currentValue * multiplier;
+    }
+
+    for (int i = 0; i < _divisors.length; i++) {
+      final divisor = _divisors[i];
+      steps.add(
+        CalculationStep.division(
+          inputValue: currentValue,
+          divisor: divisor,
+          currency: _targetCurrency,
+        ),
+      );
+      currentValue = currentValue / divisor;
     }
 
     _calculationSteps = steps;
@@ -310,6 +380,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
       if (formula.isValid) {
         _baseAmount = formula.baseAmount;
         _multipliers = List.from(formula.multipliers);
+        _divisors = List.from(formula.divisors);
         _currentFormula = formula;
       }
     } catch (e) {
@@ -336,6 +407,7 @@ class ExchangeRateViewModel extends ChangeNotifier {
         targetCurrency: _targetCurrency,
         baseAmount: _baseAmount,
         multipliers: _multipliers,
+        divisors: _divisors,
       );
 
       final data = json.encode(formula.toMap());
